@@ -15,12 +15,12 @@ func (u dateType) Equals(a, b interface{}) bool {
 	return a.(time.Time).Equal(b.(time.Time))
 }
 
-func (u dateType) Pack(value interface{}) (*structpb.Value, error) {
+func (u dateType) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(u.String(value))
 }
 
-func (u dateType) UnPack(value *structpb.Value) (interface{}, error) {
-	return time.Parse("2006-01-02", value.GetStringValue())
+func (u dateType) UnPack(value interface{}) (interface{}, error) {
+	return time.Parse("2006-01-02", value.(string))
 }
 
 func (u dateType) Default() any {

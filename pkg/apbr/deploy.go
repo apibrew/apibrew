@@ -131,7 +131,7 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 
 	var record abs.RecordLike
 	if !override {
-		record, err = GetClient().CreateRecord(ctx, "nano", "Code", abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+		record, err = GetClient().CreateRecord(ctx, "nano", "Code", abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 			"name":          structpb.NewStringValue(name),
 			"content":       structpb.NewStringValue(content),
 			"language":      structpb.NewStringValue(language),
@@ -142,7 +142,7 @@ func deployNanoCode(ctx context.Context, path string, name string, override bool
 			return err
 		}
 	} else {
-		record, err = GetClient().ApplyRecord(ctx, "nano", "Code", abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+		record, err = GetClient().ApplyRecord(ctx, "nano", "Code", abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 			"name":          structpb.NewStringValue(name),
 			"content":       structpb.NewStringValue(content),
 			"language":      structpb.NewStringValue(language),

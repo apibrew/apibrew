@@ -41,7 +41,7 @@ func EventToProto(result *resource_model.Event) *core.Event {
 		}
 	}
 	event.Records = util.ArrayMapX(result.Records, func(t *resource_model.Record) abs.RecordLike {
-		return abs.NewRecordLikeWithProperties(resource_model.RecordMapperInstance.ToRecord(t).GetStructProperty("properties").GetStructValue().Fields)
+		return abs.NewRecordLikeWithStructProperties(resource_model.RecordMapperInstance.ToRecord(t).GetStructProperty("properties").GetStructValue().Fields)
 	})
 
 	event.Resource = ResourceFrom(result.Resource)
@@ -81,7 +81,7 @@ func EventFromProto(event *core.Event) *resource_model.Event {
 		}
 	}
 	extensionEvent.Records = util.ArrayMapX(event.Records, func(item abs.RecordLike) *resource_model.Record {
-		return resource_model.RecordMapperInstance.FromRecord(abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+		return resource_model.RecordMapperInstance.FromRecord(abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 			"id":         item.GetStructProperty("id"),
 			"properties": structpb.NewStructValue(item.ToStruct()),
 		}))

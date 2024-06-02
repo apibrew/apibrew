@@ -2,7 +2,6 @@ package types
 
 import (
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var emptyUuid = uuid.UUID{}
@@ -17,12 +16,12 @@ func (u uuidType) Equals(a, b interface{}) bool {
 	return u.String(a) == u.String(b)
 }
 
-func (u uuidType) Pack(value interface{}) (*structpb.Value, error) {
-	return structpb.NewValue(value.(uuid.UUID).String())
+func (u uuidType) Pack(value interface{}) (interface{}, error) {
+	return value.(uuid.UUID).String(), nil
 }
 
-func (u uuidType) UnPack(val *structpb.Value) (interface{}, error) {
-	return uuid.Parse(val.GetStringValue())
+func (u uuidType) UnPack(val interface{}) (interface{}, error) {
+	return uuid.Parse(val.(string))
 }
 
 func (u uuidType) Default() any {

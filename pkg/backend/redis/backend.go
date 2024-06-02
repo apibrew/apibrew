@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
@@ -9,7 +10,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/util"
 	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/proto"
 	"time"
 )
 
@@ -37,7 +37,7 @@ func (r redisBackend) DestroyDataSource(ctx context.Context) {
 
 func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	for _, record := range records {
-		data, err := proto.Marshal(abs.RecordLikeAsRecord(record))
+		data, err := json.Marshal(record)
 
 		if err != nil {
 			log.Warn(err)
@@ -59,7 +59,7 @@ func (r redisBackend) AddRecords(ctx context.Context, resource *model.Resource, 
 
 func (r redisBackend) UpdateRecords(ctx context.Context, resource *model.Resource, records []abs.RecordLike) ([]abs.RecordLike, error) {
 	for _, record := range records {
-		data, err := proto.Marshal(abs.RecordLikeAsRecord(record))
+		data, err := json.Marshal(record)
 
 		if err != nil {
 			log.Warn(err)
@@ -88,7 +88,7 @@ func (r redisBackend) GetRecord(ctx context.Context, resource *model.Resource, i
 
 	var record = abs.NewRecordLike()
 
-	err = proto.Unmarshal(recData, abs.RecordLikeAsRecord(record))
+	err = json.Unmarshal(recData, record)
 
 	if err != nil {
 		return nil, r.handleError(err)

@@ -18,7 +18,7 @@ func (o objectType) Equals(a, b interface{}) bool {
 	return v1 == v2
 }
 
-func (o objectType) Pack(value interface{}) (*structpb.Value, error) {
+func (o objectType) Pack(value interface{}) (interface{}, error) {
 	if nv, ok := value.(*interface{}); ok {
 		return o.Pack(*nv)
 	}
@@ -36,8 +36,8 @@ func (o objectType) Serialize(value interface{}) (interface{}, error) {
 	return string(data), nil
 }
 
-func (o objectType) UnPack(value *structpb.Value) (interface{}, error) {
-	return value.AsInterface(), nil
+func (o objectType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
 }
 
 func (o objectType) Pointer(required bool) any {

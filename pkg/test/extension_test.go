@@ -20,12 +20,12 @@ import (
 )
 
 var simpleVirtualResourceRecords = []abs.RecordLike{
-	abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+	abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 		"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),
 		"name":        structpb.NewStringValue("rec-1"),
 		"description": structpb.NewStringValue("rec-1-desc"),
 	}),
-	abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+	abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 		"id":          structpb.NewStringValue("54298994-a309-11ed-a8fc-0242ac120002"),
 		"name":        structpb.NewStringValue("rec-2"),
 		"description": structpb.NewStringValue("rec-2-desc"),

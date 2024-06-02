@@ -15,12 +15,12 @@ func (d float64Type) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (d float64Type) Pack(value interface{}) (*structpb.Value, error) {
+func (d float64Type) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(value)
 }
 
-func (d float64Type) UnPack(value *structpb.Value) (interface{}, error) {
-	return value.GetNumberValue(), nil
+func (d float64Type) UnPack(value interface{}) (interface{}, error) {
+	return value.(float64), nil
 }
 
 func (d float64Type) Pointer(required bool) any {

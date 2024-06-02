@@ -314,7 +314,7 @@ func (d *client) DeleteRecord(ctx context.Context, namespace string, name string
 		Token:     d.token,
 		Namespace: namespace,
 		Resource:  name,
-		Ids:       []string{record.GetStructProperty("id").GetStringValue()},
+		Ids:       []string{record.GetStringProperty("id")},
 	})
 
 	return err

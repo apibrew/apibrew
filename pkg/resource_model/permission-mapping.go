@@ -11,7 +11,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 import "github.com/google/uuid"
@@ -42,164 +41,128 @@ func (m *PermissionMapper) ToRecord(permission *Permission) abs.RecordLike {
 }
 
 func (m *PermissionMapper) FromRecord(record abs.RecordLike) *Permission {
-	return m.FromProperties(record.ToStruct().GetFields())
+	return m.FromProperties(record.Self())
 }
 
-func (m *PermissionMapper) ToProperties(permission *Permission) map[string]*structpb.Value {
-	var properties = make(map[string]*structpb.Value)
+func (m *PermissionMapper) ToProperties(permission *Permission) map[string]interface{} {
+	var properties = make(map[string]interface{})
 
 	var_Id := permission.Id
 
 	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
+		var var_Id_mapped interface{}
 
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
+		var_Id_mapped = *var_Id
 		properties["id"] = var_Id_mapped
 	}
 
 	var_Version := permission.Version
 
-	var var_Version_mapped *structpb.Value
+	var var_Version_mapped interface{}
 
-	var var_Version_err error
-	var_Version_mapped, var_Version_err = types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version)
-	if var_Version_err != nil {
-		panic(var_Version_err)
-	}
+	var_Version_mapped = var_Version
 	properties["version"] = var_Version_mapped
 
 	var_AuditData := permission.AuditData
 
 	if var_AuditData != nil {
-		var var_AuditData_mapped *structpb.Value
+		var var_AuditData_mapped interface{}
 
-		var_AuditData_mapped = structpb.NewStructValue(&structpb.Struct{Fields: PermissionAuditDataMapperInstance.ToProperties(var_AuditData)})
+		var_AuditData_mapped = PermissionAuditDataMapperInstance.ToProperties(var_AuditData)
 		properties["auditData"] = var_AuditData_mapped
 	}
 
 	var_Namespace := permission.Namespace
 
 	if var_Namespace != nil {
-		var var_Namespace_mapped *structpb.Value
+		var var_Namespace_mapped interface{}
 
-		var var_Namespace_err error
-		var_Namespace_mapped, var_Namespace_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Namespace)
-		if var_Namespace_err != nil {
-			panic(var_Namespace_err)
-		}
+		var_Namespace_mapped = *var_Namespace
 		properties["namespace"] = var_Namespace_mapped
 	}
 
 	var_Resource := permission.Resource
 
 	if var_Resource != nil {
-		var var_Resource_mapped *structpb.Value
+		var var_Resource_mapped interface{}
 
-		var var_Resource_err error
-		var_Resource_mapped, var_Resource_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_Resource)
-		if var_Resource_err != nil {
-			panic(var_Resource_err)
-		}
+		var_Resource_mapped = *var_Resource
 		properties["resource"] = var_Resource_mapped
 	}
 
 	var_RecordSelector := permission.RecordSelector
 
 	if var_RecordSelector != nil {
-		var var_RecordSelector_mapped *structpb.Value
+		var var_RecordSelector_mapped interface{}
 
-		var_RecordSelector_mapped = structpb.NewStructValue(&structpb.Struct{Fields: BooleanExpressionMapperInstance.ToProperties(var_RecordSelector)})
+		var_RecordSelector_mapped = BooleanExpressionMapperInstance.ToProperties(var_RecordSelector)
 		properties["recordSelector"] = var_RecordSelector_mapped
 	}
 
 	var_Operation := permission.Operation
 
-	var var_Operation_mapped *structpb.Value
+	var var_Operation_mapped interface{}
 
-	var var_Operation_err error
-	var_Operation_mapped, var_Operation_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Operation))
-	if var_Operation_err != nil {
-		panic(var_Operation_err)
-	}
+	var_Operation_mapped = string(var_Operation)
 	properties["operation"] = var_Operation_mapped
 
 	var_Before := permission.Before
 
 	if var_Before != nil {
-		var var_Before_mapped *structpb.Value
+		var var_Before_mapped interface{}
 
-		var var_Before_err error
-		var_Before_mapped, var_Before_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_Before)
-		if var_Before_err != nil {
-			panic(var_Before_err)
-		}
+		var_Before_mapped = *var_Before
 		properties["before"] = var_Before_mapped
 	}
 
 	var_After := permission.After
 
 	if var_After != nil {
-		var var_After_mapped *structpb.Value
+		var var_After_mapped interface{}
 
-		var var_After_err error
-		var_After_mapped, var_After_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_After)
-		if var_After_err != nil {
-			panic(var_After_err)
-		}
+		var_After_mapped = *var_After
 		properties["after"] = var_After_mapped
 	}
 
 	var_User := permission.User
 
 	if var_User != nil {
-		var var_User_mapped *structpb.Value
+		var var_User_mapped interface{}
 
-		var_User_mapped = structpb.NewStructValue(&structpb.Struct{Fields: UserMapperInstance.ToProperties(var_User)})
+		var_User_mapped = UserMapperInstance.ToProperties(var_User)
 		properties["user"] = var_User_mapped
 	}
 
 	var_Role := permission.Role
 
 	if var_Role != nil {
-		var var_Role_mapped *structpb.Value
+		var var_Role_mapped interface{}
 
-		var_Role_mapped = structpb.NewStructValue(&structpb.Struct{Fields: RoleMapperInstance.ToProperties(var_Role)})
+		var_Role_mapped = RoleMapperInstance.ToProperties(var_Role)
 		properties["role"] = var_Role_mapped
 	}
 
 	var_Permit := permission.Permit
 
-	var var_Permit_mapped *structpb.Value
+	var var_Permit_mapped interface{}
 
-	var var_Permit_err error
-	var_Permit_mapped, var_Permit_err = types.ByResourcePropertyType(model.ResourceProperty_ENUM).Pack(string(var_Permit))
-	if var_Permit_err != nil {
-		panic(var_Permit_err)
-	}
+	var_Permit_mapped = string(var_Permit)
 	properties["permit"] = var_Permit_mapped
 
 	var_LocalFlags := permission.LocalFlags
 
 	if var_LocalFlags != nil {
-		var var_LocalFlags_mapped *structpb.Value
+		var var_LocalFlags_mapped interface{}
 
-		var var_LocalFlags_err error
-		var_LocalFlags_mapped, var_LocalFlags_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_LocalFlags)
-		if var_LocalFlags_err != nil {
-			panic(var_LocalFlags_err)
-		}
+		var_LocalFlags_mapped = var_LocalFlags
 		properties["localFlags"] = var_LocalFlags_mapped
 	}
 	return properties
 }
 
-func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value) *Permission {
+func (m *PermissionMapper) FromProperties(properties map[string]interface{}) *Permission {
 	var s = m.New()
-	if properties["id"] != nil && properties["id"].AsInterface() != nil {
+	if properties["id"] != nil {
 
 		var_Id := properties["id"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
@@ -213,7 +176,7 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Id = var_Id_mapped
 	}
-	if properties["version"] != nil && properties["version"].AsInterface() != nil {
+	if properties["version"] != nil {
 
 		var_Version := properties["version"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).UnPack(var_Version)
@@ -226,16 +189,16 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Version = var_Version_mapped
 	}
-	if properties["auditData"] != nil && properties["auditData"].AsInterface() != nil {
+	if properties["auditData"] != nil {
 
 		var_AuditData := properties["auditData"]
-		var mappedValue = PermissionAuditDataMapperInstance.FromProperties(var_AuditData.GetStructValue().Fields)
+		var mappedValue = PermissionAuditDataMapperInstance.FromProperties(var_AuditData.(map[string]interface{}))
 
 		var_AuditData_mapped := mappedValue
 
 		s.AuditData = var_AuditData_mapped
 	}
-	if properties["namespace"] != nil && properties["namespace"].AsInterface() != nil {
+	if properties["namespace"] != nil {
 
 		var_Namespace := properties["namespace"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Namespace)
@@ -249,7 +212,7 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Namespace = var_Namespace_mapped
 	}
-	if properties["resource"] != nil && properties["resource"].AsInterface() != nil {
+	if properties["resource"] != nil {
 
 		var_Resource := properties["resource"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_Resource)
@@ -263,23 +226,23 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Resource = var_Resource_mapped
 	}
-	if properties["recordSelector"] != nil && properties["recordSelector"].AsInterface() != nil {
+	if properties["recordSelector"] != nil {
 
 		var_RecordSelector := properties["recordSelector"]
-		var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_RecordSelector.GetStructValue().Fields)
+		var mappedValue = BooleanExpressionMapperInstance.FromProperties(var_RecordSelector.(map[string]interface{}))
 
 		var_RecordSelector_mapped := mappedValue
 
 		s.RecordSelector = var_RecordSelector_mapped
 	}
-	if properties["operation"] != nil && properties["operation"].AsInterface() != nil {
+	if properties["operation"] != nil {
 
 		var_Operation := properties["operation"]
-		var_Operation_mapped := (PermissionOperation)(var_Operation.GetStringValue())
+		var_Operation_mapped := (PermissionOperation)(var_Operation.(string))
 
 		s.Operation = var_Operation_mapped
 	}
-	if properties["before"] != nil && properties["before"].AsInterface() != nil {
+	if properties["before"] != nil {
 
 		var_Before := properties["before"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_Before)
@@ -293,7 +256,7 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.Before = var_Before_mapped
 	}
-	if properties["after"] != nil && properties["after"].AsInterface() != nil {
+	if properties["after"] != nil {
 
 		var_After := properties["after"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_After)
@@ -307,32 +270,32 @@ func (m *PermissionMapper) FromProperties(properties map[string]*structpb.Value)
 
 		s.After = var_After_mapped
 	}
-	if properties["user"] != nil && properties["user"].AsInterface() != nil {
+	if properties["user"] != nil {
 
 		var_User := properties["user"]
-		var_User_mapped := UserMapperInstance.FromProperties(var_User.GetStructValue().Fields)
+		var_User_mapped := UserMapperInstance.FromProperties(var_User.(map[string]interface{}))
 
 		s.User = var_User_mapped
 	}
-	if properties["role"] != nil && properties["role"].AsInterface() != nil {
+	if properties["role"] != nil {
 
 		var_Role := properties["role"]
-		var_Role_mapped := RoleMapperInstance.FromProperties(var_Role.GetStructValue().Fields)
+		var_Role_mapped := RoleMapperInstance.FromProperties(var_Role.(map[string]interface{}))
 
 		s.Role = var_Role_mapped
 	}
-	if properties["permit"] != nil && properties["permit"].AsInterface() != nil {
+	if properties["permit"] != nil {
 
 		var_Permit := properties["permit"]
-		var_Permit_mapped := (PermissionPermit)(var_Permit.GetStringValue())
+		var_Permit_mapped := (PermissionPermit)(var_Permit.(string))
 
 		s.Permit = var_Permit_mapped
 	}
-	if properties["localFlags"] != nil && properties["localFlags"].AsInterface() != nil {
+	if properties["localFlags"] != nil {
 
 		var_LocalFlags := properties["localFlags"]
 		var_LocalFlags_mapped := new(interface{})
-		*var_LocalFlags_mapped = unstructured.FromValue(var_LocalFlags)
+		*var_LocalFlags_mapped = var_LocalFlags
 
 		s.LocalFlags = var_LocalFlags_mapped
 	}
@@ -477,66 +440,50 @@ func (m *PermissionAuditDataMapper) ResourceIdentity() abs.ResourceIdentity {
 	}
 }
 
-func (m *PermissionAuditDataMapper) ToProperties(permissionAuditData *PermissionAuditData) map[string]*structpb.Value {
-	var properties = make(map[string]*structpb.Value)
+func (m *PermissionAuditDataMapper) ToProperties(permissionAuditData *PermissionAuditData) map[string]interface{} {
+	var properties = make(map[string]interface{})
 
 	var_CreatedBy := permissionAuditData.CreatedBy
 
 	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped *structpb.Value
+		var var_CreatedBy_mapped interface{}
 
-		var var_CreatedBy_err error
-		var_CreatedBy_mapped, var_CreatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_CreatedBy)
-		if var_CreatedBy_err != nil {
-			panic(var_CreatedBy_err)
-		}
+		var_CreatedBy_mapped = *var_CreatedBy
 		properties["createdBy"] = var_CreatedBy_mapped
 	}
 
 	var_UpdatedBy := permissionAuditData.UpdatedBy
 
 	if var_UpdatedBy != nil {
-		var var_UpdatedBy_mapped *structpb.Value
+		var var_UpdatedBy_mapped interface{}
 
-		var var_UpdatedBy_err error
-		var_UpdatedBy_mapped, var_UpdatedBy_err = types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(*var_UpdatedBy)
-		if var_UpdatedBy_err != nil {
-			panic(var_UpdatedBy_err)
-		}
+		var_UpdatedBy_mapped = *var_UpdatedBy
 		properties["updatedBy"] = var_UpdatedBy_mapped
 	}
 
 	var_CreatedOn := permissionAuditData.CreatedOn
 
 	if var_CreatedOn != nil {
-		var var_CreatedOn_mapped *structpb.Value
+		var var_CreatedOn_mapped interface{}
 
-		var var_CreatedOn_err error
-		var_CreatedOn_mapped, var_CreatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_CreatedOn)
-		if var_CreatedOn_err != nil {
-			panic(var_CreatedOn_err)
-		}
+		var_CreatedOn_mapped = *var_CreatedOn
 		properties["createdOn"] = var_CreatedOn_mapped
 	}
 
 	var_UpdatedOn := permissionAuditData.UpdatedOn
 
 	if var_UpdatedOn != nil {
-		var var_UpdatedOn_mapped *structpb.Value
+		var var_UpdatedOn_mapped interface{}
 
-		var var_UpdatedOn_err error
-		var_UpdatedOn_mapped, var_UpdatedOn_err = types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(*var_UpdatedOn)
-		if var_UpdatedOn_err != nil {
-			panic(var_UpdatedOn_err)
-		}
+		var_UpdatedOn_mapped = *var_UpdatedOn
 		properties["updatedOn"] = var_UpdatedOn_mapped
 	}
 	return properties
 }
 
-func (m *PermissionAuditDataMapper) FromProperties(properties map[string]*structpb.Value) *PermissionAuditData {
+func (m *PermissionAuditDataMapper) FromProperties(properties map[string]interface{}) *PermissionAuditData {
 	var s = m.New()
-	if properties["createdBy"] != nil && properties["createdBy"].AsInterface() != nil {
+	if properties["createdBy"] != nil {
 
 		var_CreatedBy := properties["createdBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_CreatedBy)
@@ -550,7 +497,7 @@ func (m *PermissionAuditDataMapper) FromProperties(properties map[string]*struct
 
 		s.CreatedBy = var_CreatedBy_mapped
 	}
-	if properties["updatedBy"] != nil && properties["updatedBy"].AsInterface() != nil {
+	if properties["updatedBy"] != nil {
 
 		var_UpdatedBy := properties["updatedBy"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).UnPack(var_UpdatedBy)
@@ -564,7 +511,7 @@ func (m *PermissionAuditDataMapper) FromProperties(properties map[string]*struct
 
 		s.UpdatedBy = var_UpdatedBy_mapped
 	}
-	if properties["createdOn"] != nil && properties["createdOn"].AsInterface() != nil {
+	if properties["createdOn"] != nil {
 
 		var_CreatedOn := properties["createdOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_CreatedOn)
@@ -578,7 +525,7 @@ func (m *PermissionAuditDataMapper) FromProperties(properties map[string]*struct
 
 		s.CreatedOn = var_CreatedOn_mapped
 	}
-	if properties["updatedOn"] != nil && properties["updatedOn"].AsInterface() != nil {
+	if properties["updatedOn"] != nil {
 
 		var_UpdatedOn := properties["updatedOn"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).UnPack(var_UpdatedOn)

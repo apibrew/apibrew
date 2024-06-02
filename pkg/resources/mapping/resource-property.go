@@ -62,7 +62,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 
 	MapSpecialColumnsToRecord(property, &properties)
 
-	return abs.NewRecordLikeWithProperties(properties)
+	return abs.NewRecordLikeWithStructProperties(properties)
 }
 
 func ResourcePropertyFromRecord(propertyName string, record abs.RecordLike) *model.ResourceProperty {
@@ -141,7 +141,7 @@ func ResourcePropertyFromRecord(propertyName string, record abs.RecordLike) *mod
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_LIST || resourceProperty.Type == model.ResourceProperty_MAP {
-		resourceProperty.Item = ResourcePropertyFromRecord("", abs.NewRecordLikeWithProperties(record.GetStructProperty("item").GetStructValue().GetFields()))
+		resourceProperty.Item = ResourcePropertyFromRecord("", abs.NewRecordLikeWithStructProperties(record.GetStructProperty("item").GetStructValue().GetFields()))
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_STRUCT {

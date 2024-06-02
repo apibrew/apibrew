@@ -15,7 +15,7 @@ func (u referenceType) Equals(a, b interface{}) bool {
 	return u.String(a) == u.String(b) //fixme
 }
 
-func (u referenceType) Pack(value interface{}) (*structpb.Value, error) {
+func (u referenceType) Pack(value interface{}) (interface{}, error) {
 	st, err := structpb.NewStruct(value.(map[string]interface{}))
 
 	if err != nil {
@@ -25,18 +25,18 @@ func (u referenceType) Pack(value interface{}) (*structpb.Value, error) {
 	return structpb.NewStructValue(st), nil
 }
 
-func (u referenceType) UnPack(val *structpb.Value) (interface{}, error) {
+func (u referenceType) UnPack(val interface{}) (interface{}, error) {
 	if val == nil {
 		return nil, nil
 	}
 
-	if val.GetStringValue() != "" {
+	if valueStr, ok := val.(string); ok {
 		return map[string]interface{}{
-			"id": val.GetStringValue(),
+			"id": valueStr,
 		}, nil
 	}
 
-	return val.GetStructValue().AsMap(), nil
+	return val, nil
 }
 
 func (u referenceType) Default() any {

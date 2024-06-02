@@ -15,12 +15,12 @@ func (u boolType) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (u boolType) Pack(value interface{}) (*structpb.Value, error) {
+func (u boolType) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(value)
 }
 
-func (u boolType) UnPack(value *structpb.Value) (interface{}, error) {
-	return value.GetBoolValue(), nil
+func (u boolType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
 }
 
 func (u boolType) Default() any {

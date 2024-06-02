@@ -1,9 +1,5 @@
 package types
 
-import (
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
 var StringType = stringType{}
 
 // string
@@ -20,12 +16,12 @@ func (s stringType) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (s stringType) Pack(value interface{}) (*structpb.Value, error) {
-	return structpb.NewValue(value)
+func (s stringType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
 }
 
-func (s stringType) UnPack(value *structpb.Value) (interface{}, error) {
-	return value.GetStringValue(), nil
+func (s stringType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
 }
 
 func (s stringType) Default() any {

@@ -28,12 +28,12 @@ func (b bytesType) Equals(aBytes, bBytes interface{}) bool {
 	return isEqual
 }
 
-func (b bytesType) Pack(value interface{}) (*structpb.Value, error) {
+func (b bytesType) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(value)
 }
 
-func (b bytesType) UnPack(value *structpb.Value) (interface{}, error) {
-	return base64.StdEncoding.DecodeString(value.GetStringValue())
+func (b bytesType) UnPack(value interface{}) (interface{}, error) {
+	return base64.StdEncoding.DecodeString(value.(string))
 }
 
 func (b bytesType) Pointer(required bool) any {

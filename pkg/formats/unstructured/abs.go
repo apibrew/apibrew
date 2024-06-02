@@ -1,10 +1,7 @@
 package unstructured
 
 import (
-	"encoding/json"
 	"github.com/apibrew/apibrew/pkg/abs"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/runtime/protoimpl"
 	"google.golang.org/protobuf/types/known/structpb"
 	"unicode/utf8"
@@ -45,62 +42,12 @@ func MergeOut(u Unstructured, un Unstructured, nested bool) {
 	}
 }
 
-func ToProtoMessage(u Unstructured, msg proto.Message) error {
-	b, err := json.Marshal(u)
-	if err != nil {
-		return err
-	}
-
-	return jsonUMo.Unmarshal(b, msg)
-}
-
-func FromProtoMessage(u Unstructured, msg proto.Message) error {
-	b, err := jsonMo.Marshal(msg)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(b, &u)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func FromRecord(record abs.RecordLike) (Unstructured, error) {
 	return record.Self(), nil
 }
 
-var jsonMo = protojson.MarshalOptions{
-	Multiline:       true,
-	EmitUnpopulated: false,
-}
-
-var jsonUMo = protojson.UnmarshalOptions{
-	AllowPartial:   true,
-	DiscardUnknown: false,
-	Resolver:       nil,
-}
-
 func ToRecord(u Unstructured) (abs.RecordLike, error) {
 	return abs.NewRecordLikeFromProperties(u), nil
-}
-
-func ToProperties(u Unstructured) (map[string]*structpb.Value, error) {
-	var properties = make(map[string]*structpb.Value)
-
-	for key, value := range u {
-		var err error
-		properties[key], err = ToValue(value)
-
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return properties, nil
 }
 
 func Keys(u Unstructured) []string {

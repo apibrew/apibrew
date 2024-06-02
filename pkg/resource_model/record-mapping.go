@@ -11,7 +11,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 import "github.com/google/uuid"
@@ -41,64 +40,52 @@ func (m *RecordMapper) ToRecord(record *Record) abs.RecordLike {
 }
 
 func (m *RecordMapper) FromRecord(record abs.RecordLike) *Record {
-	return m.FromProperties(record.ToStruct().GetFields())
+	return m.FromProperties(record.Self())
 }
 
-func (m *RecordMapper) ToProperties(record *Record) map[string]*structpb.Value {
-	var properties = make(map[string]*structpb.Value)
+func (m *RecordMapper) ToProperties(record *Record) map[string]interface{} {
+	var properties = make(map[string]interface{})
 
 	var_Id := record.Id
 
 	if var_Id != nil {
-		var var_Id_mapped *structpb.Value
+		var var_Id_mapped interface{}
 
-		var var_Id_err error
-		var_Id_mapped, var_Id_err = types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(*var_Id)
-		if var_Id_err != nil {
-			panic(var_Id_err)
-		}
+		var_Id_mapped = *var_Id
 		properties["id"] = var_Id_mapped
 	}
 
 	var_Properties := record.Properties
 
-	var var_Properties_mapped *structpb.Value
+	var var_Properties_mapped interface{}
 
-	var var_Properties_err error
-	var_Properties_mapped, var_Properties_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Properties)
-	if var_Properties_err != nil {
-		panic(var_Properties_err)
-	}
+	var_Properties_mapped = var_Properties
 	properties["properties"] = var_Properties_mapped
 
 	var_PackedProperties := record.PackedProperties
 
 	if var_PackedProperties != nil {
-		var var_PackedProperties_mapped *structpb.Value
+		var var_PackedProperties_mapped interface{}
 
-		var var_PackedProperties_l []*structpb.Value
+		var var_PackedProperties_l []interface{}
 		for _, value := range var_PackedProperties {
 
 			var_5x := value
-			var var_5x_mapped *structpb.Value
+			var var_5x_mapped interface{}
 
-			var var_5x_err error
-			var_5x_mapped, var_5x_err = types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_5x)
-			if var_5x_err != nil {
-				panic(var_5x_err)
-			}
+			var_5x_mapped = var_5x
 
 			var_PackedProperties_l = append(var_PackedProperties_l, var_5x_mapped)
 		}
-		var_PackedProperties_mapped = structpb.NewListValue(&structpb.ListValue{Values: var_PackedProperties_l})
+		var_PackedProperties_mapped = var_PackedProperties_l
 		properties["packedProperties"] = var_PackedProperties_mapped
 	}
 	return properties
 }
 
-func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Record {
+func (m *RecordMapper) FromProperties(properties map[string]interface{}) *Record {
 	var s = m.New()
-	if properties["id"] != nil && properties["id"].AsInterface() != nil {
+	if properties["id"] != nil {
 
 		var_Id := properties["id"]
 		val, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).UnPack(var_Id)
@@ -112,21 +99,21 @@ func (m *RecordMapper) FromProperties(properties map[string]*structpb.Value) *Re
 
 		s.Id = var_Id_mapped
 	}
-	if properties["properties"] != nil && properties["properties"].AsInterface() != nil {
+	if properties["properties"] != nil {
 
 		var_Properties := properties["properties"]
-		var_Properties_mapped := unstructured.FromValue(var_Properties)
+		var_Properties_mapped := var_Properties
 
 		s.Properties = var_Properties_mapped
 	}
-	if properties["packedProperties"] != nil && properties["packedProperties"].AsInterface() != nil {
+	if properties["packedProperties"] != nil {
 
 		var_PackedProperties := properties["packedProperties"]
 		var_PackedProperties_mapped := []interface{}{}
-		for _, v := range var_PackedProperties.GetListValue().Values {
+		for _, v := range var_PackedProperties.([]interface{}) {
 
 			var_4x := v
-			var_4x_mapped := unstructured.FromValue(var_4x)
+			var_4x_mapped := var_4x
 
 			var_PackedProperties_mapped = append(var_PackedProperties_mapped, var_4x_mapped)
 		}

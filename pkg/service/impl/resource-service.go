@@ -635,7 +635,7 @@ func (r *resourceService) Delete(ctx context.Context, ids []string, doMigration 
 			return err
 		}
 
-		var records = []abs.RecordLike{abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+		var records = []abs.RecordLike{abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 			"id": structpb.NewStringValue(resourceId),
 		})}
 

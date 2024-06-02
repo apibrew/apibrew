@@ -18,7 +18,7 @@ func (o mapType) Equals(a, b interface{}) bool {
 	return v1 == v2
 }
 
-func (o mapType) Pack(value interface{}) (*structpb.Value, error) {
+func (o mapType) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(value)
 }
 
@@ -32,8 +32,8 @@ func (o mapType) Serialize(value interface{}) (interface{}, error) {
 	return string(data), nil
 }
 
-func (o mapType) UnPack(value *structpb.Value) (interface{}, error) {
-	return value.AsInterface(), nil
+func (o mapType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
 }
 
 func (o mapType) Pointer(required bool) any {

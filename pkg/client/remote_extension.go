@@ -109,7 +109,7 @@ func (e *remoteExtension) Run(ctx context.Context) error {
 
 				if !found {
 					log.Warn("Removing orphaned remoteExtension: ", exr.Id)
-					err = e.client.DeleteRecord(ctx, resources.ExtensionResource.Namespace, resources.ExtensionResource.Name, abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+					err = e.client.DeleteRecord(ctx, resources.ExtensionResource.Namespace, resources.ExtensionResource.Name, abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 						"id": structpb.NewStringValue(exr.Id.String()),
 					}))
 

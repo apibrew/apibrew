@@ -127,7 +127,7 @@ func (h handler[Entity]) prepareLambdaProcessFunc(action string, processFunc Lam
 	return func(ctx context.Context, req *core.Event) (*core.Event, error) {
 
 		for _, record := range req.Records {
-			if record.GetStructProperty("action") == nil || record.GetStructProperty("action").GetStringValue() != action { // @todo this logic should be in server side
+			if !record.HasProperty("action") || record.GetStringProperty("action") != action { // @todo this logic should be in server side
 				continue
 			}
 			err := processFunc(ctx, req, h.mapper.FromRecord(record))

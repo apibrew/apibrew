@@ -2,7 +2,6 @@ package types
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
-	"google.golang.org/protobuf/types/known/structpb"
 	"reflect"
 )
 
@@ -10,8 +9,8 @@ type PropertyType interface {
 	Pointer(required bool) any
 	String(val any) string
 	IsEmpty(value any) bool
-	Pack(value interface{}) (*structpb.Value, error)
-	UnPack(value *structpb.Value) (interface{}, error)
+	Pack(value interface{}) (interface{}, error)
+	UnPack(value interface{}) (interface{}, error)
 	Default() any
 	Equals(a, b interface{}) bool
 }

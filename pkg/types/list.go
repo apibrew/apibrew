@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/json"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var ListType = listType{}
@@ -18,8 +17,8 @@ func (o listType) Equals(a, b interface{}) bool {
 	return v1 == v2
 }
 
-func (o listType) Pack(value interface{}) (*structpb.Value, error) {
-	return structpb.NewValue(value)
+func (o listType) Pack(value interface{}) (interface{}, error) {
+	return value, nil
 }
 
 func (o listType) Serialize(value interface{}) (interface{}, error) {
@@ -32,8 +31,8 @@ func (o listType) Serialize(value interface{}) (interface{}, error) {
 	return string(data), nil
 }
 
-func (o listType) UnPack(value *structpb.Value) (interface{}, error) {
-	return value.AsInterface(), nil
+func (o listType) UnPack(value interface{}) (interface{}, error) {
+	return value, nil
 }
 
 func (o listType) Pointer(required bool) any {

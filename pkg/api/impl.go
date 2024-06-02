@@ -132,7 +132,7 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
-	properties, err2 := unstructured.ToProperties(recordObj)
+	properties, err2 := unstructured.ToRecord(recordObj)
 
 	if err2 != nil {
 		return nil, errors.RecordValidationError.WithMessage(err2.Error())
@@ -142,7 +142,7 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 		return nil, errors.InternalError.WithMessage("Resource load is not supported")
 	}
 
-	record, err := a.recordService.Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties, service.RecordLoadParams{
+	record, err := a.recordService.Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties.ToStruct().Fields, service.RecordLoadParams{
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 	})

@@ -15,12 +15,12 @@ func (t timeType) Equals(a, b interface{}) bool {
 	return a.(time.Time).Equal(b.(time.Time))
 }
 
-func (t timeType) Pack(value interface{}) (*structpb.Value, error) {
+func (t timeType) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(value.(time.Time).Format("15:04:05"))
 }
 
-func (t timeType) UnPack(value *structpb.Value) (interface{}, error) {
-	return time.Parse("15:04:05", value.GetStringValue())
+func (t timeType) UnPack(value interface{}) (interface{}, error) {
+	return time.Parse("15:04:05", value.(string))
 }
 
 func (t timeType) Pointer(required bool) any {

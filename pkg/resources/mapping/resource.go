@@ -8,14 +8,14 @@ import (
 )
 
 func ResourceToRecord(resource *model.Resource) abs.RecordLike {
-	properties := make(map[string]*structpb.Value)
+	properties := make(map[string]interface{})
 
-	properties["name"] = structpb.NewStringValue(resource.Name)
+	properties["name"] = resource.Name
 	if resource.Title != nil {
-		properties["title"] = structpb.NewStringValue(*resource.Title)
+		properties["title"] = *resource.Title
 	}
 	if resource.Description != nil {
-		properties["description"] = structpb.NewStringValue(*resource.Description)
+		properties["description"] = *resource.Description
 	}
 	properties["namespace"] = util.StructKv("name", resource.Namespace)
 	properties["virtual"] = structpb.NewBoolValue(resource.Virtual)
@@ -24,48 +24,48 @@ func ResourceToRecord(resource *model.Resource) abs.RecordLike {
 	properties["checkReferences"] = structpb.NewBoolValue(resource.CheckReferences)
 	if resource.SourceConfig != nil {
 		properties["dataSource"] = util.StructKv("name", resource.SourceConfig.DataSource)
-		properties["entity"] = structpb.NewStringValue(resource.SourceConfig.Entity)
-		properties["catalog"] = structpb.NewStringValue(resource.SourceConfig.Catalog)
+		properties["entity"] = resource.SourceConfig.Entity
+		properties["catalog"] = resource.SourceConfig.Catalog
 	}
 	properties["annotations"], _ = structpb.NewValue(convertMap(resource.Annotations, func(v string) interface{} {
 		return v
 	}))
 
 	if resource.Indexes != nil {
-		var lv []*structpb.Value
+		var lv []interface{}
 
-		lv = make([]*structpb.Value, 0)
+		lv = make([]interface{}, 0)
 
 		for _, index := range resource.Indexes {
 			lv = append(lv, ResourceIndexToValue(index))
 		}
 
-		properties["indexes"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
+		properties["indexes"] = lv
 	}
 
-	var propertiesStruct = make(map[string]*structpb.Value)
+	var propertiesStruct = make(map[string]interface{})
 	for _, property := range resource.Properties {
 		propertyRecord := ResourcePropertyToRecord(property, resource)
 		propertiesStruct[property.Name] = structpb.NewStructValue(propertyRecord.ToStruct())
 	}
-	properties["properties"] = structpb.NewStructValue(&structpb.Struct{Fields: propertiesStruct})
+	properties["properties"] = propertiesStruct
 
 	if resource.Types != nil {
-		var lv []*structpb.Value
+		var lv []interface{}
 
-		lv = make([]*structpb.Value, 0)
+		lv = make([]interface{}, 0)
 
 		for _, subType := range resource.Types {
 			lv = append(lv, ResourceTypeToValue(resource, subType))
 		}
 
-		properties["types"] = structpb.NewListValue(&structpb.ListValue{Values: lv})
+		properties["types"] = lv
 	}
 
 	MapSpecialColumnsToRecord(resource, &properties)
 
 	if resource.Id != "" {
-		properties["id"] = structpb.NewStringValue(resource.Id)
+		properties["id"] = resource.Id
 	}
 
 	return abs.NewRecordLikeWithProperties(properties)
@@ -91,8 +91,8 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 			Entity:     record.GetStructProperty("entity").GetStringValue(),
 			Catalog:    record.GetStructProperty("catalog").GetStringValue(),
 		},
-		Properties: util.ArrayMap(util.MapToArray(record.GetStructProperty("properties").GetStructValue().Fields), func(t util.MapEntry[*structpb.Value]) *model.ResourceProperty {
-			return ResourcePropertyFromRecord(t.Key, abs.NewRecordLikeWithProperties(t.Val.GetStructValue().Fields))
+		Properties: util.ArrayMap(util.MapToArray(record.GetStructProperty("properties").GetStructValue().Fields), func(t util.MapEntry[interface{}]) *model.ResourceProperty {
+			return ResourcePropertyFromRecord(t.Key, abs.NewRecordLikeWithStructProperties(t.Val.(map[string]interface{})))
 		}),
 		Annotations: convertMap(record.GetStructProperty("annotations").GetStructValue().AsMap(), func(v interface{}) string {
 			return v.(string)
@@ -100,12 +100,12 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 	}
 
 	if record.HasProperty("indexes") {
-		list := record.GetStructProperty("indexes").GetListValue()
+		list := record.GetProperty("indexes").([]interface{})
 
 		resource.Indexes = make([]*model.ResourceIndex, 0)
 
-		for _, val := range list.Values {
-			resource.Indexes = append(resource.Indexes, ResourceIndexFromValue(val))
+		for _, val := range list {
+			resource.Indexes = append(resource.Indexes, ResourceIndexFromValue(val.(map[string]interface{})))
 		}
 	}
 
@@ -135,28 +135,26 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 	return resource
 }
 
-func ResourceIndexFromValue(val *structpb.Value) *model.ResourceIndex {
+func ResourceIndexFromValue(val map[string]interface{}) *model.ResourceIndex {
 	var ri = &model.ResourceIndex{
 		Properties: nil,
 		IndexType:  0,
 	}
 
-	st := val.GetStructValue()
-
-	if st.Fields["annotations"] != nil {
-		ri.Annotations = convertMap(st.Fields["annotations"].GetStructValue().AsMap(), func(v interface{}) string {
+	if val["annotations"] != nil {
+		ri.Annotations = convertMap(val["annotations"].(map[string]interface{}), func(v interface{}) string {
 			return v.(string)
 		})
 	}
 
-	if st.Fields["unique"] != nil {
-		ri.Unique = st.Fields["unique"].GetBoolValue()
+	if val["unique"] != nil {
+		ri.Unique = val["unique"].(bool)
 	}
 
-	if st.Fields["properties"] != nil {
-		list := st.Fields["properties"].GetListValue()
+	if val["properties"] != nil {
+		list := val["properties"].(bool)
 
-		for _, val := range list.Values {
+		for _, val := range list {
 			pVal := val.GetStructValue()
 			ri.Properties = append(ri.Properties, &model.ResourceIndexProperty{
 				Name:  pVal.Fields["name"].GetStringValue(),
@@ -168,7 +166,7 @@ func ResourceIndexFromValue(val *structpb.Value) *model.ResourceIndex {
 	return ri
 }
 
-func ResourceIndexToValue(index *model.ResourceIndex) *structpb.Value {
+func ResourceIndexToValue(index *model.ResourceIndex) interface{} {
 	annotations, err := structpb.NewValue(convertMap(index.Annotations, func(v string) interface{} {
 		return v
 	}))
@@ -177,30 +175,28 @@ func ResourceIndexToValue(index *model.ResourceIndex) *structpb.Value {
 		panic(err)
 	}
 
-	var propertyStructList []*structpb.Value
+	var propertyStructList []interface{}
 
 	for _, property := range index.Properties {
-		propertyStructList = append(propertyStructList, structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
-			"name":  structpb.NewStringValue(property.Name),
-			"order": structpb.NewStringValue(property.Order.String()[len("ORDER_"):]),
-		}}))
+		propertyStructList = append(propertyStructList, map[string]interface{}{
+			"name":  property.Name,
+			"order": property.Order.String()[len("ORDER_"):],
+		})
 	}
 
-	return structpb.NewStructValue(&structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"annotations": annotations,
-			"unique":      structpb.NewBoolValue(index.Unique),
-			"properties":  structpb.NewListValue(&structpb.ListValue{Values: propertyStructList}),
-		},
-	})
+	return map[string]interface{}{
+		"annotations": annotations,
+		"unique":      index.Unique,
+		"properties":  propertyStructList,
+	}
 }
 
-func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
+func ResourceTypeFromValue(val interface{}) *model.ResourceSubType {
 	var st = val.GetStructValue()
 	rt := &model.ResourceSubType{
 		Name: st.GetFields()["name"].GetStringValue(),
-		Properties: util.ArrayMap(util.MapToArray(st.GetFields()["properties"].GetStructValue().Fields), func(t util.MapEntry[*structpb.Value]) *model.ResourceProperty {
-			return ResourcePropertyFromRecord(t.Key, abs.NewRecordLikeWithProperties(t.Val.GetStructValue().Fields))
+		Properties: util.ArrayMap(util.MapToArray(st.GetFields()["properties"].GetStructValue().Fields), func(t util.MapEntry[interface{}]) *model.ResourceProperty {
+			return ResourcePropertyFromRecord(t.Key, abs.NewRecordLikeWithStructProperties(t.Val.GetStructValue().Fields))
 		}),
 	}
 
@@ -215,18 +211,18 @@ func ResourceTypeFromValue(val *structpb.Value) *model.ResourceSubType {
 	return rt
 }
 
-func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubType) *structpb.Value {
-	var propertiesStruct = make(map[string]*structpb.Value)
+func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubType) interface{} {
+	var propertiesStruct = make(map[string]interface{})
 	for _, property := range subType.Properties {
 		propertyRecord := ResourcePropertyToRecord(property, resource)
 		propertiesStruct[property.Name] = structpb.NewStructValue(propertyRecord.ToStruct())
 	}
 
 	return structpb.NewStructValue(&structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"name":        structpb.NewStringValue(subType.Name),
-			"title":       structpb.NewStringValue(subType.Title),
-			"description": structpb.NewStringValue(subType.Description),
+		Fields: map[string]interface{}{
+			"name":        subType.Name,
+			"title":       subType.Title,
+			"description": subType.Description,
 			"properties":  structpb.NewStructValue(&structpb.Struct{Fields: propertiesStruct}),
 		},
 	})

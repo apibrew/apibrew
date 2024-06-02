@@ -110,7 +110,7 @@ func runNanoCode(ctx context.Context, path string) error {
 		content = string(contentBytes)
 	}
 
-	result, err := GetClient().CreateRecord(ctx, "nano", "Script", abs.NewRecordLikeWithProperties(map[string]*structpb.Value{
+	result, err := GetClient().CreateRecord(ctx, "nano", "Script", abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
 		"source":        structpb.NewStringValue(content),
 		"language":      structpb.NewStringValue(language),
 		"contentFormat": structpb.NewStringValue(contentFormat),
@@ -121,7 +121,7 @@ func runNanoCode(ctx context.Context, path string) error {
 	}
 
 	if result.HasProperty("output") {
-		var output = result.GetStructProperty("output").AsInterface()
+		var output = result.GetStringProperty("output")
 
 		data, err := json.Marshal(output)
 

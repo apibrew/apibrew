@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/jsonformat"
 	"github.com/apibrew/apibrew/pkg/formats/unstructured"
@@ -15,7 +14,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/formats/yamlformat"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
-	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"io"
@@ -103,16 +101,6 @@ func (p *preprocessor) runPreprocess(cfPath string, un unstructured.Unstructured
 		}
 
 		return p.runPreprocess(cfPath, un)
-	}
-
-	if util.ArrayContains(keys, "$syntax") {
-		err = p.checkSyntax(cfPath, un)
-
-		if err != nil {
-			return nil, err
-		}
-
-		return un, nil
 	}
 
 	return un, nil
@@ -353,43 +341,6 @@ func (p *preprocessor) runPreprocessOverride(un unstructured.Unstructured) (unst
 	return un, nil
 }
 
-func (p *preprocessor) checkSyntax(cfPath string, un unstructured.Unstructured) error {
-	if un["$syntax"] != nil {
-		syntax, err := p.runPreprocess(cfPath, un["$syntax"].(unstructured.Unstructured))
-
-		if err != nil {
-			return err
-		}
-
-		unstructured.DeleteKey(un, "$syntax")
-
-		var subType = &model.Resource{}
-
-		err = unstructured.ToProtoMessage(syntax.(unstructured.Unstructured), subType)
-
-		if err != nil {
-			return err
-		}
-
-		record, err := unstructured.ToRecord(un)
-
-		if err != nil {
-			return err
-		}
-
-		err = validate.Records(subType, []abs.RecordLike{record}, false)
-
-		// recover syntax as it needs to be persisted
-		un["$syntax"] = syntax
-
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (p *preprocessor) runPreprocessProperties(un unstructured.Unstructured) (unstructured.Unstructured, error) {
 	propertiesDirective := un["$properties"].(unstructured.Unstructured)
 	var properties []unstructured.Unstructured
@@ -398,17 +349,11 @@ func (p *preprocessor) runPreprocessProperties(un unstructured.Unstructured) (un
 		var propertyUn = make(unstructured.Unstructured)
 
 		if typeStr, ok := value.(string); ok {
-			var property = new(model.ResourceProperty)
 
-			if typeId, ok := model.ResourceProperty_Type_value[strings.ToUpper(typeStr)]; ok {
-				property.Type = model.ResourceProperty_Type(typeId)
+			if _, ok := model.ResourceProperty_Type_value[strings.ToUpper(typeStr)]; ok {
+				propertyUn["type"] = typeStr
 			} else {
 				return nil, fmt.Errorf("invalid property type %s", typeStr)
-			}
-			err := unstructured.FromProtoMessage(propertyUn, property)
-
-			if err != nil {
-				return nil, err
 			}
 		} else if valueUn, ok := value.(unstructured.Unstructured); ok {
 			propertyUn = valueUn
@@ -461,7 +406,7 @@ func (p *preprocessor) flat(processed interface{}) []interface{} {
 }
 
 var preprocessKeywords = []string{
-	"$extend", "$override", "$select", "$syntax", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties", "$file", "$base64File", "$folder",
+	"$extend", "$override", "$select", "$ref", "$merge", "$set", "$clear", "$append", "$include", "$expression", "$properties", "$file", "$base64File", "$folder",
 }
 
 func isPreprocessorKey(key string) bool {

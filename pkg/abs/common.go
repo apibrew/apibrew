@@ -2,8 +2,8 @@ package abs
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+	"reflect"
 )
 
 type ResourceLike interface {
@@ -11,8 +11,20 @@ type ResourceLike interface {
 	GetTypes() []*model.ResourceSubType
 }
 
+// types:
+// string
+// int32
+// int64
+// float32
+// float64
+// bool
+// []interface{}
+// map[string]interface{}
+
 type RecordLike interface {
 	Keys() []string
+	GetProperty(key string) interface{}
+	SetProperty(key string, value interface{}) RecordLike
 	GetStructProperty(key string) *structpb.Value
 	SetStructProperty(key string, value *structpb.Value) RecordLike
 	WithProperties(properties map[string]interface{}) RecordLike
@@ -29,6 +41,16 @@ type RecordLike interface {
 }
 
 type record map[string]interface{}
+
+func (r *record) GetProperty(key string) interface{} {
+	return (*r)[key]
+}
+
+func (r *record) SetProperty(key string, value interface{}) RecordLike {
+	(*r)[key] = value
+
+	return r
+}
 
 func (r *record) Self() map[string]interface{} {
 	return *r
@@ -48,7 +70,7 @@ func (r *record) AsInterface(key string) interface{} {
 
 func (r *record) Merge(appliedRecord RecordLike) RecordLike {
 	for _, key := range appliedRecord.Keys() {
-		r.SetStructProperty(key, appliedRecord.GetStructProperty(key))
+		r.SetProperty(key, appliedRecord.GetProperty(key))
 	}
 
 	return r
@@ -85,24 +107,8 @@ func (r *record) HasProperty(key string) bool {
 }
 
 func (r *record) EqualTo(updated RecordLike) bool {
-	if updated == nil {
+	if !reflect.DeepEqual(*r, updated.Self()) {
 		return false
-	}
-
-	if len(*r) != len(updated.Keys()) {
-		return false
-	}
-
-	for key, value := range *r {
-		if updated.GetStructProperty(key) == nil {
-			return false
-		}
-
-		if value != updated.GetStructProperty(key) {
-			if !proto.Equal(updated.GetStructProperty(key), r.GetStructProperty(key)) {
-				return false
-			}
-		}
 	}
 
 	return true
@@ -179,7 +185,7 @@ func RecordAsRecordLike(record *model.Record) RecordLike {
 		return nil
 	}
 
-	return NewRecordLikeWithProperties(record.Properties)
+	return NewRecordLikeWithStructProperties(record.Properties)
 }
 
 func RecordLikeAsRecords(record []RecordLike) []*model.Record {
@@ -214,7 +220,7 @@ func NewRecordLike() RecordLike {
 	return &result
 }
 
-func NewRecordLikeWithProperties(properties map[string]*structpb.Value) RecordLike {
+func NewRecordLikeWithStructProperties(properties map[string]*structpb.Value) RecordLike {
 	if properties == nil {
 		properties = make(map[string]*structpb.Value)
 	}
@@ -222,6 +228,18 @@ func NewRecordLikeWithProperties(properties map[string]*structpb.Value) RecordLi
 	result := make(record)
 
 	result.WithStructProperties(properties)
+
+	return &result
+}
+
+func NewRecordLikeWithProperties(properties map[string]interface{}) RecordLike {
+	if properties == nil {
+		properties = make(map[string]interface{})
+	}
+
+	result := make(record)
+
+	result.WithProperties(properties)
 
 	return &result
 }

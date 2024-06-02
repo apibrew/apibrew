@@ -15,12 +15,12 @@ func (f float32Type) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (f float32Type) Pack(value interface{}) (*structpb.Value, error) {
+func (f float32Type) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(value)
 }
 
-func (f float32Type) UnPack(value *structpb.Value) (interface{}, error) {
-	return float32(value.GetNumberValue()), nil
+func (f float32Type) UnPack(value interface{}) (interface{}, error) {
+	return value.(float32), nil
 }
 
 func (f float32Type) Pointer(required bool) any {

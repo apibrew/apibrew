@@ -472,7 +472,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 									"id": structpb.NewStringValue(util.GetRecordId(record)),
 								}})
 
-								backRefNewRecords = append(backRefNewRecords, abs.NewRecordLikeWithProperties(st.Fields))
+								backRefNewRecords = append(backRefNewRecords, abs.NewRecordLikeWithStructProperties(st.Fields))
 							}
 						}
 					}

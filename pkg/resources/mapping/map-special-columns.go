@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func MapSpecialColumnsToRecord(instance any, properties *map[string]*structpb.Value) {
+func MapSpecialColumnsToRecord(instance any, properties *map[string]interface{}) {
 	ref := reflect.Indirect(reflect.ValueOf(instance))
 	versionCol := ref.FieldByName("Version")
 

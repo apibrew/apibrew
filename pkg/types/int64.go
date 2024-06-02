@@ -15,12 +15,12 @@ func (i int64Type) Equals(a, b interface{}) bool {
 	return a == b
 }
 
-func (i int64Type) Pack(value interface{}) (*structpb.Value, error) {
+func (i int64Type) Pack(value interface{}) (interface{}, error) {
 	return structpb.NewValue(value)
 }
 
-func (i int64Type) UnPack(value *structpb.Value) (interface{}, error) {
-	return int64(value.GetNumberValue()), nil
+func (i int64Type) UnPack(value interface{}) (interface{}, error) {
+	return value.(int64), nil
 }
 
 func (i int64Type) Default() any {
