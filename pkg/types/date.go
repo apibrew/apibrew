@@ -16,11 +16,15 @@ func (u dateType) Equals(a, b interface{}) bool {
 }
 
 func (u dateType) Pack(value interface{}) (interface{}, error) {
-	return structpb.NewValue(u.String(value))
+	return u.String(value), nil
 }
 
 func (u dateType) UnPack(value interface{}) (interface{}, error) {
 	return time.Parse("2006-01-02", value.(string))
+}
+
+func (u dateType) PackStruct(value interface{}) (interface{}, error) {
+	return structpb.NewValue(u.String(value))
 }
 
 func (u dateType) Default() any {

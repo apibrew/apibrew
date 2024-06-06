@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/errors"
+	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 	"strings"
 )
@@ -27,14 +27,14 @@ func Records(resource abs.ResourceLike, list []abs.RecordLike, isUpdate bool) er
 
 			exists := record.HasProperty(property.Name)
 
-			packedVal := record.GetStructProperty(property.Name)
+			packedVal := record.GetProperty(property.Name)
 
 			if !exists && property.DefaultValue != nil && property.DefaultValue.AsInterface() != nil {
-				packedVal = property.DefaultValue
+				packedVal = property.DefaultValue.AsInterface()
 				exists = true
 			}
 
-			if packedVal.AsInterface() == nil {
+			if packedVal == nil {
 				packedVal = nil
 			}
 
@@ -109,12 +109,8 @@ func Records(resource abs.ResourceLike, list []abs.RecordLike, isUpdate bool) er
 	return errors.RecordValidationError.WithErrorFields(fieldErrors)
 }
 
-func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId string, propertyPath string, value *structpb.Value) []*model.ErrorField {
+func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId string, propertyPath string, value interface{}) []*model.ErrorField {
 	if value == nil {
-		return nil
-	}
-
-	if _, ok := value.Kind.(*structpb.Value_NullValue); ok {
 		return nil
 	}
 
@@ -126,10 +122,10 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 
 	switch property.Type {
 	case model.ResourceProperty_BOOL:
-		err = canCast[bool]("bool", value.AsInterface())
+		err = canCast[bool]("bool", value)
 	case model.ResourceProperty_DATE, model.ResourceProperty_TIME, model.ResourceProperty_TIMESTAMP, model.ResourceProperty_BYTES, model.ResourceProperty_UUID:
 		// validation of string based types
-		err = canCast[string]("string", value.AsInterface())
+		err = canCast[string]("string", value)
 
 		if err != nil {
 			break
@@ -137,17 +133,17 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 
 		_, err = propertyType.UnPack(value)
 	case model.ResourceProperty_STRING:
-		err = canCast[string]("string", value.AsInterface())
+		err = canCast[string]("string", value)
 	case model.ResourceProperty_FLOAT32:
-		err = canCastNumber[float32]("float32", value.AsInterface())
+		err = canCastNumber[float32]("float32", value)
 	case model.ResourceProperty_FLOAT64:
-		err = canCastNumber[float64]("float64", value.AsInterface())
+		err = canCastNumber[float64]("float64", value)
 	case model.ResourceProperty_INT32:
-		err = canCastNumber[int32]("int32", value.AsInterface())
+		err = canCastNumber[int32]("int32", value)
 	case model.ResourceProperty_INT64:
-		err = canCastNumber[int64]("int64", value.AsInterface())
+		err = canCastNumber[int64]("int64", value)
 	case model.ResourceProperty_REFERENCE:
-		err = canCast[map[string]interface{}]("ReferenceType", value.AsInterface())
+		err = canCast[map[string]interface{}]("ReferenceType", value)
 	case model.ResourceProperty_OBJECT:
 		return nil
 	}
@@ -157,7 +153,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			RecordId: recordId,
 			Property: propertyPath,
 			Message:  err.Error(),
-			Value:    value,
+			Value:    unstructured.ToMustValue(value),
 		}}
 	}
 
@@ -165,10 +161,10 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 	switch property.Type {
 	case model.ResourceProperty_LIST:
 
-		if listValue, ok := value.Kind.(*structpb.Value_ListValue); ok {
+		if listValue, ok := value.([]interface{}); ok {
 			var errorFields []*model.ErrorField
 
-			for i, item := range listValue.ListValue.Values {
+			for i, item := range listValue {
 				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+"."+property.Name+"["+strconv.Itoa(i)+"].", item)...)
 			}
 			return errorFields
@@ -177,14 +173,14 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 				RecordId: recordId,
 				Property: propertyPath,
 				Message:  "value is not list",
-				Value:    value,
+				Value:    unstructured.ToMustValue(value),
 			}}
 		}
 	case model.ResourceProperty_MAP:
-		if listValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
+		if mapValue, ok := value.(map[string]interface{}); ok {
 			var errorFields []*model.ErrorField
 
-			for key, item := range listValue.StructValue.Fields {
+			for key, item := range mapValue {
 				errorFields = append(errorFields, Value(resource, property.Item, recordId, propertyPath+"["+key+"].", item)...)
 			}
 
@@ -194,22 +190,22 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 				RecordId: recordId,
 				Property: propertyPath,
 				Message:  "value is not map",
-				Value:    value,
+				Value:    unstructured.ToMustValue(value),
 			}}
 		}
 	case model.ResourceProperty_ENUM:
-		err = canCast[string]("enum", value.AsInterface())
+		err = canCast[string]("enum", value)
 
 		if err != nil {
 			return []*model.ErrorField{{
 				RecordId: recordId,
 				Property: propertyPath,
 				Message:  err.Error(),
-				Value:    value,
+				Value:    unstructured.ToMustValue(value),
 			}}
 		}
 
-		valStr := value.GetStringValue()
+		valStr := value.(string)
 
 		for _, enumValue := range property.EnumValues {
 			if enumValue == strings.ToUpper(valStr) {
@@ -221,13 +217,13 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 			RecordId: recordId,
 			Property: propertyPath,
 			Message:  fmt.Sprintf("value must be one of enum values: [%s]", strings.Join(property.EnumValues, "|")),
-			Value:    value,
+			Value:    unstructured.ToMustValue(value),
 		}}
 
 	case model.ResourceProperty_STRUCT:
 		var errorFields []*model.ErrorField
 
-		if structValue, ok := value.Kind.(*structpb.Value_StructValue); ok {
+		if structValue, ok := value.(map[string]interface{}); ok {
 			var properties []*model.ResourceProperty
 
 			// locating type
@@ -240,17 +236,17 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 					RecordId: recordId,
 					Property: propertyPath,
 					Message:  fmt.Sprintf("type %s not found", *property.TypeRef),
-					Value:    value,
+					Value:    unstructured.ToMustValue(value),
 				})
 			} else {
 				properties = typeDef.Properties
 
 				for _, Item := range properties {
 					subType := types.ByResourcePropertyType(Item.Type)
-					packedVal, exists := structValue.StructValue.Fields[Item.Name]
+					packedVal, exists := structValue[Item.Name]
 
 					if !exists && Item.DefaultValue != nil && Item.DefaultValue.AsInterface() != nil {
-						packedVal = Item.DefaultValue
+						packedVal = Item.DefaultValue.AsInterface()
 					}
 
 					var val interface{}
@@ -258,8 +254,6 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 
 					if packedVal == nil {
 						val = nil
-					} else if _, ok := packedVal.Kind.(*structpb.Value_NullValue); ok {
-						return nil
 					} else {
 						val, err = subType.UnPack(packedVal)
 
@@ -268,7 +262,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 								RecordId: recordId,
 								Property: propertyPath + Item.Name,
 								Message:  err.Error(),
-								Value:    value,
+								Value:    unstructured.ToMustValue(value),
 							})
 							continue
 						}
@@ -279,15 +273,15 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 							RecordId: recordId,
 							Property: propertyPath + Item.Name,
 							Message:  "required field is empty",
-							Value:    value,
+							Value:    unstructured.ToMustValue(value),
 						})
 						continue
 					}
 
-					errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name, structValue.StructValue.Fields[Item.Name])...)
+					errorFields = append(errorFields, Value(resource, Item, recordId, propertyPath+Item.Name, structValue[Item.Name])...)
 				}
 
-				for key := range structValue.StructValue.Fields {
+				for key := range structValue {
 					found := false
 					for _, Item := range properties {
 						if Item.Name == key {
@@ -301,7 +295,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 							RecordId: recordId,
 							Property: propertyPath,
 							Message:  "there is no such property",
-							Value:    value,
+							Value:    unstructured.ToMustValue(value),
 						})
 					}
 				}
@@ -311,7 +305,7 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 				RecordId: recordId,
 				Property: propertyPath,
 				Message:  "value is not struct",
-				Value:    value,
+				Value:    unstructured.ToMustValue(value),
 			})
 		}
 
@@ -338,5 +332,5 @@ func canCastNumber[T number](typeName string, val interface{}) error {
 	if val == T(0) {
 		return nil
 	}
-	return canCast[float64](typeName, val)
+	return canCast[T](typeName, val)
 }

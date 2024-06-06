@@ -12,7 +12,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/service/validate"
 	"github.com/apibrew/apibrew/pkg/util"
-	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
 
@@ -26,7 +25,7 @@ type InterfaceRecordService interface {
 	Update(ctx context.Context, params service.RecordUpdateParams) ([]abs.RecordLike, error)
 	Apply(ctx context.Context, params service.RecordUpdateParams) ([]abs.RecordLike, error)
 	Delete(ctx context.Context, params service.RecordDeleteParams) error
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams service.RecordLoadParams) (abs.RecordLike, error)
+	Load(ctx context.Context, namespace string, name string, properties map[string]interface{}, listParams service.RecordLoadParams) (abs.RecordLike, error)
 	List(ctx context.Context, params service.RecordListParams) ([]abs.RecordLike, uint32, error)
 }
 
@@ -132,17 +131,11 @@ func (a api) Load(ctx context.Context, recordObj unstructured.Unstructured, para
 
 	var resourceIdentity = util.ParseType(recordObj["type"].(string))
 
-	properties, err2 := unstructured.ToRecord(recordObj)
-
-	if err2 != nil {
-		return nil, errors.RecordValidationError.WithMessage(err2.Error())
-	}
-
 	if resourceIdentity.Namespace == resources.ResourceResource.Namespace && resourceIdentity.Name == resources.ResourceResource.Name {
 		return nil, errors.InternalError.WithMessage("Resource load is not supported")
 	}
 
-	record, err := a.recordService.Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, properties.ToStruct().Fields, service.RecordLoadParams{
+	record, err := a.recordService.Load(ctx, resourceIdentity.Namespace, resourceIdentity.Name, recordObj, service.RecordLoadParams{
 		UseHistory:        params.UseHistory,
 		ResolveReferences: params.ResolveReferences,
 	})

@@ -22,7 +22,7 @@
   {%- elseif value.GetStructValue() != nil -%}
     structpb.NewStructValue(&structpb.Struct{
                           			Fields: map[string]*structpb.Value{
-                          				{% for key, item := range value.GetStructValue().Fields) -%}
+                          				{% for key, item := range value.GetStructValue().Fields -%}
                           				"{%s key %}": {%-= GenerateStructDef(item) -%},
                           				{% endfor -%}
                           			},

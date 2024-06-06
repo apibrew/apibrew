@@ -15,7 +15,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
 
@@ -445,13 +444,7 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 							log.Print(properties[prop.Name], val)
 						}
 					} else {
-						st, err := structpb.NewStruct(val.(map[string]interface{}))
-
-						if err != nil {
-							return nil, errors.InternalError.WithDetails(err.Error())
-						}
-
-						properties[prop.Name] = structpb.NewStructValue(st)
+						properties[prop.Name] = val
 					}
 				} else {
 					v, err2 := propertyType.Pack(val)
@@ -646,7 +639,7 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 	if propEx, ok := pair.Right.Expression.(*model.Expression_Value); ok {
 		if property.Type == model.ResourceProperty_REFERENCE {
 			if propEx.Value.GetStructValue() != nil {
-				properties := propEx.Value.GetStructValue().Fields
+				properties := propEx.Value.GetStructValue().AsMap()
 				if properties["id"] != nil {
 					right = r.applyValue(properties["id"])
 				} else {
@@ -671,10 +664,10 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 					right = innerSql
 				}
 			} else {
-				right = r.applyValue(propEx.Value)
+				right = r.applyValue(propEx.Value.AsInterface())
 			}
 		} else {
-			right = r.applyValue(propEx.Value)
+			right = r.applyValue(propEx.Value.AsInterface())
 		}
 	} else {
 		return "", "", errors.LogicalError.WithDetails("Only value expression is allowed on the right part: " + pair.Right.String())
@@ -684,8 +677,7 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 }
 
 func (r *recordLister) applyValue(value interface{}) string {
-	if value != nil {
-		list := value.([]interface{})
+	if list, ok := value.([]interface{}); ok {
 		var c []string
 		for _, val := range list {
 			c = append(c, r.val(val))

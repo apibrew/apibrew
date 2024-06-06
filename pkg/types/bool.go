@@ -1,7 +1,6 @@
 package types
 
 import (
-	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
 
@@ -16,7 +15,7 @@ func (u boolType) Equals(a, b interface{}) bool {
 }
 
 func (u boolType) Pack(value interface{}) (interface{}, error) {
-	return structpb.NewValue(value)
+	return value, nil
 }
 
 func (u boolType) UnPack(value interface{}) (interface{}, error) {

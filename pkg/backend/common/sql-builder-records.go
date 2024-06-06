@@ -62,7 +62,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 					if referencedResource == nil {
 						return errors.LogicalError.WithDetails("Referenced resource not found: " + referenceNamespace + "/" + property.Reference.Resource)
 					}
-					item, err := p.resolveReference(packedVal.GetStructValue().Fields, args.Add, referencedResource)
+					item, err := p.resolveReference(packedVal.GetStructValue().AsMap(), args.Add, referencedResource)
 
 					if err != nil {
 						return err
@@ -98,7 +98,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 	return p.handleDbError(ctx, err)
 }
 
-func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, argPlaceHolder func(val interface{}) string, referencedResource *model.Resource) (string, error) {
+func (p *sqlBackend) resolveReference(properties map[string]interface{}, argPlaceHolder func(val interface{}) string, referencedResource *model.Resource) (string, error) {
 	identifierProps, err := util.RecordIdentifierProperties(referencedResource, properties)
 
 	if err != nil {
@@ -132,7 +132,7 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 				return "", errors.LogicalError.WithDetails("Referenced resource not found: " + prop.Reference.Namespace + "/" + prop.Reference.Resource)
 			}
 
-			refValue, err := p.resolveReference(v.GetStructValue().Fields, argPlaceHolder, nestedReferencedResource)
+			refValue, err := p.resolveReference(v.(map[string]interface{}), argPlaceHolder, nestedReferencedResource)
 
 			if err != nil {
 				return "", err
@@ -160,7 +160,7 @@ func (p *sqlBackend) resolveReference(properties map[string]*structpb.Value, arg
 }
 
 func (p *sqlBackend) createRecordIdMatchQuery(resource *model.Resource, record abs.RecordLike, argPlaceHolder func(value interface{}) string) (string, error) {
-	identifierProps, err := util.RecordIdentifierProperties(resource, record.ToStruct().GetFields())
+	identifierProps, err := util.RecordIdentifierProperties(resource, record.MapCopy())
 	namedProps := util.GetNamedMap(resource.Properties)
 	if util.HasResourceSinglePrimaryProp(resource) {
 		idProp := util.GetResourceSinglePrimaryProp(resource)
@@ -229,7 +229,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 		}
 
 		exists := record.HasProperty(property.Name)
-		packedVal := record.GetStructProperty(property.Name)
+		packedVal := record.GetProperty(property.Name)
 
 		if !exists {
 			continue
@@ -256,7 +256,7 @@ func (p *sqlBackend) recordUpdate(ctx context.Context, runner helper.QueryRunner
 				referenceNamespace = resource.Namespace
 			}
 			referencedResource := schema.ResourceByNamespaceSlashName[referenceNamespace+"/"+property.Reference.Resource]
-			item, err := p.resolveReference(packedVal.GetStructValue().Fields, updateBuilder.Var, referencedResource)
+			item, err := p.resolveReference(packedVal.(map[string]interface{}), updateBuilder.Var, referencedResource)
 
 			if err != nil {
 				return err

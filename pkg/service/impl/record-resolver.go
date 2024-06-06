@@ -147,7 +147,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 					}
 					if referenceValue.GetListValue() != nil {
 						for _, value := range referenceValue.GetListValue().Values {
-							subQuery, err := util.RecordIdentifierQuery(referencedResource, value.GetStructValue().Fields)
+							subQuery, err := util.RecordIdentifierQuery(referencedResource, value.GetStructValue().AsMap())
 
 							if err != nil {
 								return errors.LogicalError.WithDetails(err.Error())
@@ -160,7 +160,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 							}
 						}
 					} else if referenceValue.GetStructValue() != nil {
-						subQuery, err := util.RecordIdentifierQuery(referencedResource, referenceValue.GetStructValue().Fields)
+						subQuery, err := util.RecordIdentifierQuery(referencedResource, referenceValue.GetStructValue().AsMap())
 
 						if err != nil {
 							return errors.LogicalError.WithDetails(err.Error())
@@ -196,7 +196,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 
 						for _, subRefValue := range referenceValue.GetListValue().Values {
 							for _, item := range list {
-								matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, subRefValue.GetStructValue().Fields)
+								matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, subRefValue.GetStructValue().AsMap())
 
 								if err != nil {
 									return errors.LogicalError.WithDetails(err.Error())
@@ -212,7 +212,7 @@ func (r *recordResolver) _recordListWalkOperator(ctx context.Context, path strin
 						recordValueMap[recordId].SetStructProperty(prop.Name, subValues[recordId])
 					} else if referenceValue.GetStructValue() != nil {
 						for _, item := range list {
-							matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, referenceValue.GetStructValue().Fields)
+							matches, err := util.RecordMatchIdentifiableProperties(referencedResource, item, referenceValue.GetStructValue().AsMap())
 
 							if err != nil {
 								return errors.LogicalError.WithDetails(err.Error())
@@ -331,7 +331,7 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 			for _, referenceValue := range subValues {
 				if referenceValue.GetListValue() != nil {
 					for _, value := range referenceValue.GetListValue().Values {
-						subQuery, err := util.RecordIdentifierQuery(referencedResource, value.GetStructValue().Fields)
+						subQuery, err := util.RecordIdentifierQuery(referencedResource, value.GetStructValue().AsMap())
 
 						if err != nil {
 							return errors.LogicalError.WithDetails(err.Error())
@@ -344,7 +344,7 @@ func (r *recordResolver) _recordListWalkCheckOperator(ctx context.Context, path 
 						}
 					}
 				} else if referenceValue.GetStructValue() != nil {
-					subQuery, err := util.RecordIdentifierQuery(referencedResource, referenceValue.GetStructValue().Fields)
+					subQuery, err := util.RecordIdentifierQuery(referencedResource, referenceValue.GetStructValue().AsMap())
 
 					if err != nil {
 						return errors.LogicalError.WithDetails(err.Error())

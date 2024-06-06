@@ -35,8 +35,8 @@ var AuditLogResource = &model.Resource{
 			ExampleValue: structpb.NewNumberValue(1),
 
 			Annotations: map[string]string{
-				"SpecialProperty":     "true",
 				"AllowEmptyPrimitive": "true",
+				"SpecialProperty":     "true",
 			},
 		},
 		{

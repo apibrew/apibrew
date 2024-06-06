@@ -79,7 +79,7 @@ func (q QueryBuilder) Equal(property *model.ResourceProperty, value *structpb.Va
 	}
 }
 
-func (q QueryBuilder) FromProperties(resource *model.Resource, props map[string]*structpb.Value) *model.BooleanExpression {
+func (q QueryBuilder) FromProperties(resource *model.Resource, props map[string]interface{}) *model.BooleanExpression {
 	var list []*model.BooleanExpression
 
 	var namedProps = util.GetNamedMap(resource.Properties)
@@ -87,7 +87,13 @@ func (q QueryBuilder) FromProperties(resource *model.Resource, props map[string]
 	for propKey, value := range props {
 		var prop = namedProps[propKey]
 
-		list = append(list, q.Equal(prop, value))
+		stVal, err := structpb.NewValue(value)
+
+		if err != nil {
+			panic(err)
+		}
+
+		list = append(list, q.Equal(prop, stVal))
 	}
 
 	return q.And(list...)

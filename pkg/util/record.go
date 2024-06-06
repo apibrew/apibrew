@@ -6,8 +6,7 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
+	"reflect"
 	"strings"
 )
 
@@ -25,7 +24,7 @@ func IsSameRecord(existing, updated abs.RecordLike) bool {
 	return existing.EqualTo(updated)
 }
 
-func RecordIdentifierProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, error) {
+func RecordIdentifierProperties(resource *model.Resource, properties map[string]interface{}) (map[string]interface{}, error) {
 	if props, ok := RecordIdentifierPrimaryProperties(resource, properties); ok {
 		return props, nil
 	}
@@ -37,8 +36,8 @@ func RecordIdentifierProperties(resource *model.Resource, properties map[string]
 	return nil, fmt.Errorf("at least one unique property is required to locate %s. None of the provided fields are unique %s", resource.Name, strings.Join(Keys(properties), ","))
 }
 
-func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {
-	identifierProps := make(map[string]*structpb.Value)
+func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[string]interface{}) (map[string]interface{}, bool) {
+	identifierProps := make(map[string]interface{})
 
 	if resource == nil || resource.Properties == nil {
 		return nil, false
@@ -74,9 +73,9 @@ func RecordIdentifierPrimaryProperties(resource *model.Resource, properties map[
 	return identifierProps, len(identifierProps) > 0
 }
 
-func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[string]*structpb.Value) (map[string]*structpb.Value, bool) {
+func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[string]interface{}) (map[string]interface{}, bool) {
 	for _, prop := range resource.Properties {
-		identifierProps := make(map[string]*structpb.Value)
+		identifierProps := make(map[string]interface{})
 		if !prop.Unique {
 			continue
 		}
@@ -115,7 +114,7 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 		if index.Unique {
 			var valid = true
 
-			identifierProps := make(map[string]*structpb.Value)
+			identifierProps := make(map[string]interface{})
 
 			for _, indexProp := range index.Properties {
 				prop := propMap[indexProp.Name]
@@ -164,7 +163,7 @@ func RecordIdentifierUniqueProperties(resource *model.Resource, properties map[s
 	return nil, false
 }
 
-func RecordMatchIdentifiableProperties(resource *model.Resource, record abs.RecordLike, properties map[string]*structpb.Value) (bool, error) {
+func RecordMatchIdentifiableProperties(resource *model.Resource, record abs.RecordLike, properties map[string]interface{}) (bool, error) {
 	idProps, err := RecordIdentifierProperties(resource, properties)
 
 	if err != nil {
@@ -180,7 +179,7 @@ func RecordMatchIdentifiableProperties(resource *model.Resource, record abs.Reco
 			//matches, err := RecordMatchIdentifiableProperties(prop.Reference, record, val.GetStructValue().Fields)
 			//return true, nil // fixme
 		} else {
-			if !proto.Equal(record.GetStructProperty(key), val) {
+			if !reflect.DeepEqual(record.GetProperty(key), val) {
 				return false, nil
 			}
 		}
@@ -189,7 +188,7 @@ func RecordMatchIdentifiableProperties(resource *model.Resource, record abs.Reco
 	return true, nil
 }
 
-func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path string) (getter func() *structpb.Value, setter func(val *structpb.Value)) {
+func RecordPropertyAccessorByPath(properties map[string]interface{}, path string) (getter func() interface{}, setter func(val interface{})) {
 	path = strings.ReplaceAll(path, "[]", ".[]")
 
 	path = strings.TrimPrefix(path, "$.")
@@ -201,11 +200,11 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 	}
 
 	if len(parts) == 1 {
-		getter = func() *structpb.Value {
+		getter = func() interface{} {
 			return properties[parts[0]]
 		}
 
-		return getter, func(val *structpb.Value) {
+		return getter, func(val interface{}) {
 			properties[parts[0]] = val
 		}
 	}
@@ -217,7 +216,7 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 	rightProperties := properties[left]
 
 	if rightProperties == nil {
-		return nil, func(val *structpb.Value) {
+		return nil, func(val interface{}) {
 			properties[left] = val
 		}
 	}
@@ -226,15 +225,15 @@ func RecordPropertyAccessorByPath(properties map[string]*structpb.Value, path st
 		if right != "[]" {
 			panic("invalid path; array accessor must be at the end")
 		}
-		getter = func() *structpb.Value {
+		getter = func() interface{} {
 			return rightProperties
 		}
 
-		return getter, func(val *structpb.Value) {
+		return getter, func(val interface{}) {
 			properties[left] = val
 		}
 	} else {
-		return RecordPropertyAccessorByPath(rightProperties.GetStructValue().Fields, right)
+		return RecordPropertyAccessorByPath(rightProperties.(map[string]interface{}), right)
 	}
 }
 

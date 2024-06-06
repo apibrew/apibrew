@@ -1,7 +1,6 @@
 package types
 
 import (
-	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
 
@@ -16,7 +15,7 @@ func (i int64Type) Equals(a, b interface{}) bool {
 }
 
 func (i int64Type) Pack(value interface{}) (interface{}, error) {
-	return structpb.NewValue(value)
+	return value.(int64), nil
 }
 
 func (i int64Type) UnPack(value interface{}) (interface{}, error) {

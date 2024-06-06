@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	"github.com/apibrew/apibrew/pkg/util"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type clientResourceService struct {
@@ -123,8 +122,8 @@ func (c clientRecordService) Delete(ctx context.Context, params service.RecordDe
 	return nil
 }
 
-func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (abs.RecordLike, error) {
-	res, err := c.client.LoadRecord(ctx, namespace, name, properties, loadParams)
+func (c clientRecordService) Load(ctx context.Context, namespace string, name string, properties map[string]interface{}, loadParams service.RecordLoadParams) (abs.RecordLike, error) {
+	res, err := c.client.LoadRecord(ctx, namespace, name, abs.RecordLikeAsRecord(abs.NewRecordLikeWithProperties(properties)).Properties, loadParams)
 
 	if err != nil {
 		return nil, errors.FromGrpcError(err)

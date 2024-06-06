@@ -52,7 +52,7 @@ func (m *PermissionMapper) ToProperties(permission *Permission) map[string]inter
 	if var_Id != nil {
 		var var_Id_mapped interface{}
 
-		var_Id_mapped = *var_Id
+		var_Id_mapped = var_Id.String()
 		properties["id"] = var_Id_mapped
 	}
 

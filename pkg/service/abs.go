@@ -60,7 +60,7 @@ type RecordService interface {
 	Apply(ctx context.Context, params RecordUpdateParams) ([]abs.RecordLike, error)
 	Get(ctx context.Context, params RecordGetParams) (abs.RecordLike, error)
 	Delete(ctx context.Context, params RecordDeleteParams) error
-	Load(ctx context.Context, namespace string, name string, properties map[string]*structpb.Value, listParams RecordLoadParams) (abs.RecordLike, error)
+	Load(ctx context.Context, namespace string, name string, properties map[string]interface{}, listParams RecordLoadParams) (abs.RecordLike, error)
 }
 
 type ResourceService interface {

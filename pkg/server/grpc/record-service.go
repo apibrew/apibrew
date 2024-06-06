@@ -19,7 +19,7 @@ type recordServer struct {
 }
 
 func (r *recordServer) Load(ctx context.Context, request *stub.LoadRecordRequest) (*stub.LoadRecordResponse, error) {
-	record, err := r.service.Load(annotations.WithContext(ctx, request), request.Namespace, request.Resource, request.Properties, service.RecordLoadParams{
+	record, err := r.service.Load(annotations.WithContext(ctx, request), request.Namespace, request.Resource, abs.NewRecordLikeWithStructProperties(request.Properties).MapCopy(), service.RecordLoadParams{
 		ResolveReferences: request.ResolveReferences,
 	})
 

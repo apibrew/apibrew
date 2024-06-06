@@ -56,8 +56,14 @@ func (r *record) SetProperty(key string, value interface{}) RecordLike {
 	case string:
 	case []interface{}:
 	case map[string]interface{}:
+	case interface{}:
+		if value != nil {
+			panic("unsupported type: " + reflect.TypeOf(typedValue).String())
+		}
 	default:
-		panic("unsupported type: " + reflect.TypeOf(typedValue).String())
+		if value != nil {
+			panic("unsupported type: " + reflect.TypeOf(typedValue).String())
+		}
 	}
 
 	(*r)[key] = value

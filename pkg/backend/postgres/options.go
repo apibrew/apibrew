@@ -12,7 +12,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/resource_model"
 	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/lib/pq"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type postgreSqlBackendOptions struct {
@@ -95,8 +94,8 @@ func (p *postgreSqlBackendOptions) GetFullTableName(sourceConfig *model.Resource
 	return def
 }
 
-func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, error) {
-	if packedVal == nil || packedVal.AsInterface() == nil {
+func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, packedVal interface{}) (interface{}, error) {
+	if packedVal == nil {
 		return nil, nil
 	}
 
@@ -105,7 +104,7 @@ func (p *postgreSqlBackendOptions) DbEncode(property *model.ResourceProperty, pa
 
 	if property.Type == model.ResourceProperty_OBJECT || property.Type == model.ResourceProperty_STRUCT || property.Type == model.ResourceProperty_MAP || property.Type == model.ResourceProperty_LIST {
 		var err error
-		val, err = json.Marshal(packedVal.AsInterface())
+		val, err = json.Marshal(packedVal)
 
 		if err != nil {
 			return nil, errors.InternalError.WithDetails(err.Error())

@@ -93,7 +93,7 @@ func QueryInExpression(propertyName string, val *structpb.Value) *model.BooleanE
 	}
 }
 
-func RecordIdentifierQuery(resource *model.Resource, properties map[string]*structpb.Value) (*model.BooleanExpression, error) {
+func RecordIdentifierQuery(resource *model.Resource, properties map[string]interface{}) (*model.BooleanExpression, error) {
 	identifiableProperties, err := RecordIdentifierProperties(resource, properties)
 
 	if err != nil {
@@ -102,7 +102,13 @@ func RecordIdentifierQuery(resource *model.Resource, properties map[string]*stru
 
 	var criteria []*model.BooleanExpression
 	for key, value := range identifiableProperties {
-		criteria = append(criteria, QueryEqualExpression(key, value))
+		val, err := unstructured.ToValue(value)
+
+		if err != nil {
+			panic(err)
+		}
+
+		criteria = append(criteria, QueryEqualExpression(key, val))
 	}
 
 	var query *model.BooleanExpression

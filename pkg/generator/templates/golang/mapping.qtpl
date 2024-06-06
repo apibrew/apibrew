@@ -6,6 +6,8 @@
 
     {%- if property.Type == model.ResourceProperty_ENUM -%}
          {%s varName %}_mapped = string({%= NormalizePointer(property, varName, isCollectionItem, false) %})
+    {%- elseif property.Type == model.ResourceProperty_UUID -%}
+            {%s varName %}_mapped = {%s varName %}.String()
     {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
             {%s varName %}_mapped = {%= GoName(getSubTypeNameByProperty(resource, property)) %}MapperInstance.ToProperties({%= NormalizePointer(property, varName , isCollectionItem, true) %})
     {%- elseif property.Type == model.ResourceProperty_MAP -%}
@@ -100,7 +102,7 @@ func (m *{%s typeName %}Mapper) ToRecord({%= GoVarName(typeName)%} *{%s typeName
 }
 
 func (m *{%s typeName %}Mapper) FromRecord(record abs.RecordLike) *{%s typeName %}  {
-    return m.FromProperties(record.Self())
+    return m.FromProperties(record.MapCopy())
 }
 {% endif %}
 

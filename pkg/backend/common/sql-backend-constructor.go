@@ -8,7 +8,6 @@ import (
 	"github.com/apibrew/apibrew/pkg/backend/sqlbuilder"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type sqlBackend struct {
@@ -35,7 +34,7 @@ type SqlBackendOptions interface {
 	GetDefaultCatalog() string
 	GetResourceMigrationBuilderConstructor() helper.ResourceMigrationBuilderConstructor
 	GetFullTableName(config *model.ResourceSourceConfig) string
-	DbEncode(property *model.ResourceProperty, packedVal *structpb.Value) (interface{}, error)
+	DbEncode(property *model.ResourceProperty, packedVal interface{}) (interface{}, error)
 	TypeModifier(propertyType model.ResourceProperty_Type) types.PropertyType
 }
 

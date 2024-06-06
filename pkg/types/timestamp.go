@@ -1,7 +1,6 @@
 package types
 
 import (
-	"google.golang.org/protobuf/types/known/structpb"
 	"time"
 )
 
@@ -16,7 +15,7 @@ func (t timestampType) Equals(a, b interface{}) bool {
 }
 
 func (t timestampType) Pack(value interface{}) (interface{}, error) {
-	return structpb.NewValue(value.(time.Time).Format(time.RFC3339))
+	return value.(time.Time).Format(time.RFC3339), nil
 }
 
 func (t timestampType) UnPack(value interface{}) (interface{}, error) {

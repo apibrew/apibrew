@@ -29,10 +29,20 @@ func (b bytesType) Equals(aBytes, bBytes interface{}) bool {
 }
 
 func (b bytesType) Pack(value interface{}) (interface{}, error) {
-	return structpb.NewValue(value)
+	str := base64.StdEncoding.EncodeToString(value.([]byte))
+
+	return str, nil
 }
 
 func (b bytesType) UnPack(value interface{}) (interface{}, error) {
+	return base64.StdEncoding.DecodeString(value.(string))
+}
+
+func (b bytesType) PackStruct(value interface{}) (interface{}, error) {
+	return structpb.NewValue(value)
+}
+
+func (b bytesType) UnPackStruct(value interface{}) (interface{}, error) {
 	return base64.StdEncoding.DecodeString(value.(string))
 }
 

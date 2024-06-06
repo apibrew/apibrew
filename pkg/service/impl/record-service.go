@@ -232,7 +232,7 @@ func isResourceRelatedResource(resource *model.Resource) bool {
 	return resource.Namespace == resources.ResourceResource.Namespace && (resource.Name == resources.ResourceResource.Name)
 }
 
-func (r *recordService) Load(ctx context.Context, namespace string, resourceName string, properties map[string]*structpb.Value, loadParams service.RecordLoadParams) (abs.RecordLike, error) {
+func (r *recordService) Load(ctx context.Context, namespace string, resourceName string, properties map[string]interface{}, loadParams service.RecordLoadParams) (abs.RecordLike, error) {
 	resource, _ := r.resourceService.GetResourceByName(util.WithSystemContext(ctx), namespace, resourceName)
 
 	if resource == nil {
@@ -290,7 +290,7 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		var existingRecord abs.RecordLike
 
 		if !resource.Virtual {
-			identifierProps, err := util.RecordIdentifierProperties(resource, record.ToStruct().GetFields())
+			identifierProps, err := util.RecordIdentifierProperties(resource, record.MapCopy())
 
 			if err != nil {
 				return nil, errors.RecordValidationError.WithMessage(err.Error())
@@ -451,7 +451,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 					var ids []string
 
 					for _, record := range records {
-						getter, _ := util.RecordPropertyAccessorByPath(record.ToStruct().GetFields(), refProp.Path)
+						getter, _ := util.RecordPropertyAccessorByPath(record.MapCopy(), refProp.Path)
 
 						if getter == nil {
 							continue
@@ -464,16 +464,13 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 
 						ids = append(ids, util.GetRecordId(record))
 
-						if gotVal.GetListValue() != nil {
+						for _, item := range gotVal.([]interface{}) {
+							st := item.(map[string]interface{})
+							st[backRef.Property] = structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
+								"id": structpb.NewStringValue(util.GetRecordId(record)),
+							}})
 
-							for _, item := range gotVal.GetListValue().Values {
-								st := item.GetStructValue()
-								st.Fields[backRef.Property] = structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
-									"id": structpb.NewStringValue(util.GetRecordId(record)),
-								}})
-
-								backRefNewRecords = append(backRefNewRecords, abs.NewRecordLikeWithStructProperties(st.Fields))
-							}
+							backRefNewRecords = append(backRefNewRecords, abs.NewRecordLikeWithProperties(st))
 						}
 					}
 

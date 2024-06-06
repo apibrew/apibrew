@@ -64,6 +64,14 @@ func DeleteKey(u Unstructured, key string) {
 	delete(u, key)
 }
 
+func ToMustValue(v Any) *structpb.Value {
+	x, err := ToValue(v)
+	if err != nil {
+		panic(err)
+	}
+	return x
+}
+
 func ToValue(v Any) (*structpb.Value, error) {
 	switch v := v.(type) {
 	case Unstructured:

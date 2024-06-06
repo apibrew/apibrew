@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/apibrew/apibrew/pkg/errors"
 	"github.com/apibrew/apibrew/pkg/model"
+	"github.com/apibrew/apibrew/pkg/types"
 	"github.com/apibrew/apibrew/pkg/util"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -216,10 +217,28 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 
 		// check for additional fields
 		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
-			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", prop.DefaultValue)...)
+			propType := types.ByResourcePropertyType(prop.Type)
+			value, err := propType.Pack(prop.DefaultValue.AsInterface())
+			if err != nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					Property: propertyPrefix + "DefaultValue",
+					Message:  err.Error(),
+					Value:    prop.DefaultValue,
+				})
+			}
+			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", value)...)
 		}
 		if prop.ExampleValue != nil && prop.ExampleValue.AsInterface() != nil {
-			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", prop.ExampleValue)...)
+			propType := types.ByResourcePropertyType(prop.Type)
+			value, err := propType.Pack(prop.ExampleValue.AsInterface())
+			if err != nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					Property: propertyPrefix + "ExampleValue",
+					Message:  err.Error(),
+					Value:    prop.ExampleValue,
+				})
+			}
+			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", value)...)
 		}
 	}
 
