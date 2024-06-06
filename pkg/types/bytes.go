@@ -38,12 +38,12 @@ func (b bytesType) UnPack(value interface{}) (interface{}, error) {
 	return base64.StdEncoding.DecodeString(value.(string))
 }
 
-func (b bytesType) PackStruct(value interface{}) (interface{}, error) {
+func (b bytesType) PackStruct(value interface{}) (*structpb.Value, error) {
 	return structpb.NewValue(value)
 }
 
-func (b bytesType) UnPackStruct(value interface{}) (interface{}, error) {
-	return base64.StdEncoding.DecodeString(value.(string))
+func (b bytesType) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return base64.StdEncoding.DecodeString(value.GetStringValue())
 }
 
 func (b bytesType) Pointer(required bool) any {

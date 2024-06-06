@@ -34,7 +34,7 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 
 	properties["primary"] = property.Primary
 	properties["required"] = property.Required
-	properties["length"] = int32(property.Length)
+	properties["length"] = float64(property.Length)
 	properties["unique"] = property.Unique
 	properties["immutable"] = property.Immutable
 	properties["virtual"] = property.Virtual

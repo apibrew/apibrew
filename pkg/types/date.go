@@ -23,8 +23,12 @@ func (u dateType) UnPack(value interface{}) (interface{}, error) {
 	return time.Parse("2006-01-02", value.(string))
 }
 
-func (u dateType) PackStruct(value interface{}) (interface{}, error) {
+func (u dateType) PackStruct(value interface{}) (*structpb.Value, error) {
 	return structpb.NewValue(u.String(value))
+}
+
+func (u dateType) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return time.Parse("2006-01-02", value.GetStringValue())
 }
 
 func (u dateType) Default() any {

@@ -218,7 +218,7 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 		// check for additional fields
 		if prop.DefaultValue != nil && prop.DefaultValue.AsInterface() != nil {
 			propType := types.ByResourcePropertyType(prop.Type)
-			value, err := propType.Pack(prop.DefaultValue.AsInterface())
+			value, err := propType.UnPackStruct(prop.DefaultValue)
 			if err != nil {
 				errorFields = append(errorFields, &model.ErrorField{
 					Property: propertyPrefix + "DefaultValue",
@@ -226,11 +226,21 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Value:    prop.DefaultValue,
 				})
 			}
-			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", value)...)
+
+			value2, err := propType.Pack(value)
+			if err != nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					Property: propertyPrefix + "DefaultValue",
+					Message:  err.Error(),
+					Value:    prop.DefaultValue,
+				})
+			}
+
+			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", value2)...)
 		}
 		if prop.ExampleValue != nil && prop.ExampleValue.AsInterface() != nil {
 			propType := types.ByResourcePropertyType(prop.Type)
-			value, err := propType.Pack(prop.ExampleValue.AsInterface())
+			value, err := propType.UnPackStruct(prop.ExampleValue)
 			if err != nil {
 				errorFields = append(errorFields, &model.ErrorField{
 					Property: propertyPrefix + "ExampleValue",
@@ -238,7 +248,17 @@ func ValidateResourceProperties(resource *model.Resource, path string, depth int
 					Value:    prop.ExampleValue,
 				})
 			}
-			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", value)...)
+
+			value2, err := propType.Pack(value)
+			if err != nil {
+				errorFields = append(errorFields, &model.ErrorField{
+					Property: propertyPrefix + "ExampleValue",
+					Message:  err.Error(),
+					Value:    prop.ExampleValue,
+				})
+			}
+
+			errorFields = append(errorFields, Value(resource, prop, resource.Id, "", value2)...)
 		}
 	}
 

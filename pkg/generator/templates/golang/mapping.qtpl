@@ -6,8 +6,6 @@
 
     {%- if property.Type == model.ResourceProperty_ENUM -%}
          {%s varName %}_mapped = string({%= NormalizePointer(property, varName, isCollectionItem, false) %})
-    {%- elseif property.Type == model.ResourceProperty_UUID -%}
-            {%s varName %}_mapped = {%s varName %}.String()
     {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
             {%s varName %}_mapped = {%= GoName(getSubTypeNameByProperty(resource, property)) %}MapperInstance.ToProperties({%= NormalizePointer(property, varName , isCollectionItem, true) %})
     {%- elseif property.Type == model.ResourceProperty_MAP -%}
@@ -42,12 +40,10 @@
 
 {%= GenerateResourceMappingHeaderCode(pkg, resource, resources) %}
 {%= GenerateResourceMappingBodyCode(pkg, resource, GoName(resource.Name), resource.Properties, resources) %}
-{%= UGenerateResourceMappingBodyCode(pkg, resource, GoName(resource.Name), resource.Properties, resources) %}
 
 {%- for _, subType := range getAllSubTypes(resource) -%}
 {%- code typeName := GoName(getSubTypeName(resource, subType)) -%}
 {%= GenerateResourceMappingBodyCode(pkg, resource, typeName, subType.Properties, resources ) %}
-{%= UGenerateResourceMappingBodyCode(pkg, resource, typeName, subType.Properties, resources ) %}
 {%- endfor -%}
 
 {%- endfunc -%}
@@ -67,7 +63,6 @@ import (
     "github.com/apibrew/apibrew/pkg/model"
     "github.com/apibrew/apibrew/pkg/types"
     "github.com/apibrew/apibrew/pkg/abs"
-    "github.com/apibrew/apibrew/pkg/formats/unstructured"
 )
 
 {%- for _, importLine := range getImportsForMapping(resource) -%}
@@ -116,11 +111,24 @@ func (m *{%s typeName %}Mapper) ToProperties({%= GoVarName(typeName)%} *{%s type
         {%- if isNullable(property) -%}
     if {%s varName %} != nil {
         {%-= PropertyTo(resource, property, false, varName) -%}
-        properties["{%s property.Name %}"] = {%s varName %}_mapped
+
+        {%s varName %}_packed, err := types.ByResourcePropertyType(model.ResourceProperty_{%s property.Type.String() %}).Pack({%s varName %}_mapped)
+
+        if err != nil {
+            panic(err)
+        }
+
+        properties["{%s property.Name %}"] = {%s varName %}_packed
     }
     {%- else -%}
-    {%-= PropertyTo(resource, property, false, varName) -%}
-        properties["{%s property.Name %}"] = {%s varName %}_mapped
+        {%-= PropertyTo(resource, property, false, varName) -%}
+        {%s varName %}_packed, err := types.ByResourcePropertyType(model.ResourceProperty_{%s property.Type.String() %}).Pack({%s varName %}_mapped)
+
+        if err != nil {
+            panic(err)
+        }
+
+        properties["{%s property.Name %}"] = {%s varName %}_packed
     {%- endif -%}
     {%- endfor -%}
     return properties
@@ -133,6 +141,7 @@ func (m *{%s typeName %}Mapper) FromProperties(properties map[string]interface{}
         {% code valueVarName := "var_" + GoName(property.Name) %}
         {%s valueVarName %} := properties["{%s property.Name %}"]
         {%= PreparePropertyFromMapping(resource, property, valueVarName, false) %}
+
         s.{%= GoName(property.Name) %} = {%s valueVarName %}_mapped
     }
 {%- endfor -%}

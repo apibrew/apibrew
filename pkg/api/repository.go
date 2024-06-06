@@ -14,7 +14,6 @@ type Entity interface {
 type Mapper[T Entity] interface {
 	ToRecord(user T) abs.RecordLike
 	FromRecord(record abs.RecordLike) T
-	ToUnstructured(user T) unstructured.Unstructured
 }
 
 type EntityListResult[T Entity] struct {
@@ -33,7 +32,7 @@ type Repository[T Entity] interface {
 }
 
 func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
-	result, err := r.api.Create(ctx, r.mapper.ToUnstructured(entity))
+	result, err := r.api.Create(ctx, r.mapper.ToRecord(entity).MapCopy())
 
 	if err != nil {
 		return r.entityDefault, err
@@ -49,7 +48,7 @@ func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
-	result, err := r.api.Update(ctx, r.mapper.ToUnstructured(entity))
+	result, err := r.api.Update(ctx, r.mapper.ToRecord(entity).MapCopy())
 
 	if err != nil {
 		return r.entityDefault, err
@@ -65,7 +64,7 @@ func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Apply(ctx context.Context, entity T) (T, error) {
-	result, err := r.api.Apply(ctx, r.mapper.ToUnstructured(entity))
+	result, err := r.api.Apply(ctx, r.mapper.ToRecord(entity).MapCopy())
 
 	if err != nil {
 		return r.entityDefault, err
@@ -81,7 +80,7 @@ func (r repository[T]) Apply(ctx context.Context, entity T) (T, error) {
 }
 
 func (r repository[T]) Load(ctx context.Context, entity T, params LoadParams) (T, error) {
-	result, err := r.api.Load(ctx, r.mapper.ToUnstructured(entity), params)
+	result, err := r.api.Load(ctx, r.mapper.ToRecord(entity).MapCopy(), params)
 
 	if err != nil {
 		return r.entityDefault, err
@@ -97,7 +96,7 @@ func (r repository[T]) Load(ctx context.Context, entity T, params LoadParams) (T
 }
 
 func (r repository[T]) Delete(ctx context.Context, entity T) error {
-	return r.api.Delete(ctx, r.mapper.ToUnstructured(entity))
+	return r.api.Delete(ctx, r.mapper.ToRecord(entity).MapCopy())
 }
 
 func (r repository[T]) List(ctx context.Context, params ListParams) (EntityListResult[T], error) {

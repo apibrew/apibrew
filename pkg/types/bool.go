@@ -1,6 +1,7 @@
 package types
 
 import (
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
 
@@ -20,6 +21,14 @@ func (u boolType) Pack(value interface{}) (interface{}, error) {
 
 func (u boolType) UnPack(value interface{}) (interface{}, error) {
 	return value, nil
+}
+
+func (u boolType) PackStruct(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
+}
+
+func (u boolType) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return value.GetBoolValue(), nil
 }
 
 func (u boolType) Default() any {

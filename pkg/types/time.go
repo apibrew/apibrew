@@ -1,6 +1,7 @@
 package types
 
 import (
+	"google.golang.org/protobuf/types/known/structpb"
 	"time"
 )
 
@@ -20,6 +21,14 @@ func (t timeType) Pack(value interface{}) (interface{}, error) {
 
 func (t timeType) UnPack(value interface{}) (interface{}, error) {
 	return time.Parse("15:04:05", value.(string))
+}
+
+func (t timeType) PackStruct(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value.(time.Time).Format("15:04:05"))
+}
+
+func (t timeType) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return time.Parse("15:04:05", value.GetStringValue())
 }
 
 func (t timeType) Pointer(required bool) any {

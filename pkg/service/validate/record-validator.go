@@ -149,11 +149,12 @@ func Value(resource abs.ResourceLike, property *model.ResourceProperty, recordId
 	}
 
 	if err != nil {
+		strVal, _ := propertyType.PackStruct(value)
 		return []*model.ErrorField{{
 			RecordId: recordId,
 			Property: propertyPath,
 			Message:  err.Error(),
-			Value:    unstructured.ToMustValue(value),
+			Value:    strVal,
 		}}
 	}
 
@@ -332,5 +333,5 @@ func canCastNumber[T number](typeName string, val interface{}) error {
 	if val == T(0) {
 		return nil
 	}
-	return canCast[T](typeName, val)
+	return canCast[float64](typeName, val)
 }

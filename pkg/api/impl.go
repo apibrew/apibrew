@@ -322,7 +322,7 @@ func (a api) saveResource(ctx context.Context, saveMode SaveMode, body unstructu
 		return nil, errors.InternalError.WithMessage("Unknown save mode")
 	}
 
-	processedRecordObj := resource_model.ResourceMapperInstance.ToUnstructured(resourceModel)
+	processedRecordObj := resource_model.ResourceMapperInstance.ToRecord(resourceModel).MapCopy()
 
 	return processedRecordObj, nil
 }
@@ -376,7 +376,7 @@ func (a api) listResource(ctx context.Context, params ListParams) (RecordListRes
 	for _, resourceObj := range list {
 		resourceUn := extramappings.ResourceTo(resourceObj)
 
-		result = append(result, resource_model.ResourceMapperInstance.ToUnstructured(resourceUn))
+		result = append(result, resource_model.ResourceMapperInstance.ToRecord(resourceUn).MapCopy())
 	}
 
 	return RecordListResult{

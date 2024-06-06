@@ -8,7 +8,6 @@ package resource_model
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 )
@@ -52,8 +51,15 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 	if var_Id != nil {
 		var var_Id_mapped interface{}
 
-		var_Id_mapped = var_Id.String()
-		properties["id"] = var_Id_mapped
+		var_Id_mapped = *var_Id
+
+		var_Id_packed, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(var_Id_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["id"] = var_Id_packed
 	}
 
 	var_Version := user.Version
@@ -61,7 +67,13 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 	var var_Version_mapped interface{}
 
 	var_Version_mapped = var_Version
-	properties["version"] = var_Version_mapped
+	var_Version_packed, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["version"] = var_Version_packed
 
 	var_AuditData := user.AuditData
 
@@ -69,7 +81,14 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 		var var_AuditData_mapped interface{}
 
 		var_AuditData_mapped = UserAuditDataMapperInstance.ToProperties(var_AuditData)
-		properties["auditData"] = var_AuditData_mapped
+
+		var_AuditData_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRUCT).Pack(var_AuditData_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["auditData"] = var_AuditData_packed
 	}
 
 	var_Username := user.Username
@@ -77,7 +96,13 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 	var var_Username_mapped interface{}
 
 	var_Username_mapped = var_Username
-	properties["username"] = var_Username_mapped
+	var_Username_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Username_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["username"] = var_Username_packed
 
 	var_Password := user.Password
 
@@ -85,7 +110,14 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 		var var_Password_mapped interface{}
 
 		var_Password_mapped = *var_Password
-		properties["password"] = var_Password_mapped
+
+		var_Password_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Password_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["password"] = var_Password_packed
 	}
 
 	var_Roles := user.Roles
@@ -104,7 +136,14 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 			var_Roles_l = append(var_Roles_l, var_5x_mapped)
 		}
 		var_Roles_mapped = var_Roles_l
-		properties["roles"] = var_Roles_mapped
+
+		var_Roles_packed, err := types.ByResourcePropertyType(model.ResourceProperty_LIST).Pack(var_Roles_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["roles"] = var_Roles_packed
 	}
 
 	var_Permissions := user.Permissions
@@ -123,7 +162,14 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 			var_Permissions_l = append(var_Permissions_l, var_5x_mapped)
 		}
 		var_Permissions_mapped = var_Permissions_l
-		properties["permissions"] = var_Permissions_mapped
+
+		var_Permissions_packed, err := types.ByResourcePropertyType(model.ResourceProperty_LIST).Pack(var_Permissions_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["permissions"] = var_Permissions_packed
 	}
 
 	var_Details := user.Details
@@ -132,7 +178,14 @@ func (m *UserMapper) ToProperties(user *User) map[string]interface{} {
 		var var_Details_mapped interface{}
 
 		var_Details_mapped = var_Details
-		properties["details"] = var_Details_mapped
+
+		var_Details_packed, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Details_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["details"] = var_Details_packed
 	}
 	return properties
 }
@@ -241,101 +294,6 @@ func (m *UserMapper) FromProperties(properties map[string]interface{}) *User {
 	return s
 }
 
-func (m *UserMapper) ToUnstructured(user *User) unstructured.Unstructured {
-	var properties unstructured.Unstructured = make(unstructured.Unstructured)
-	properties["type"] = "system/User"
-
-	var_Id := user.Id
-
-	if var_Id != nil {
-		var var_Id_mapped interface{}
-
-		var_Id_mapped = var_Id.String()
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Version := user.Version
-
-	var var_Version_mapped interface{}
-
-	var_Version_mapped = var_Version
-	properties["version"] = var_Version_mapped
-
-	var_AuditData := user.AuditData
-
-	if var_AuditData != nil {
-		var var_AuditData_mapped interface{}
-
-		var_AuditData_mapped = UserAuditDataMapperInstance.ToUnstructured(var_AuditData)
-		properties["auditData"] = var_AuditData_mapped
-	}
-
-	var_Username := user.Username
-
-	var var_Username_mapped interface{}
-
-	var_Username_mapped = var_Username
-	properties["username"] = var_Username_mapped
-
-	var_Password := user.Password
-
-	if var_Password != nil {
-		var var_Password_mapped interface{}
-
-		var_Password_mapped = *var_Password
-		properties["password"] = var_Password_mapped
-	}
-
-	var_Roles := user.Roles
-
-	if var_Roles != nil {
-		var var_Roles_mapped interface{}
-
-		var var_Roles_l []interface{}
-		for _, value := range var_Roles {
-
-			var_5x := value
-			var var_5x_mapped interface{}
-
-			var_5x_mapped = RoleMapperInstance.ToUnstructured(var_5x)
-
-			var_Roles_l = append(var_Roles_l, var_5x_mapped)
-		}
-		var_Roles_mapped = var_Roles_l
-		properties["roles"] = var_Roles_mapped
-	}
-
-	var_Permissions := user.Permissions
-
-	if var_Permissions != nil {
-		var var_Permissions_mapped interface{}
-
-		var var_Permissions_l []interface{}
-		for _, value := range var_Permissions {
-
-			var_5x := value
-			var var_5x_mapped interface{}
-
-			var_5x_mapped = PermissionMapperInstance.ToUnstructured(var_5x)
-
-			var_Permissions_l = append(var_Permissions_l, var_5x_mapped)
-		}
-		var_Permissions_mapped = var_Permissions_l
-		properties["permissions"] = var_Permissions_mapped
-	}
-
-	var_Details := user.Details
-
-	if var_Details != nil {
-		var var_Details_mapped interface{}
-
-		var_Details_mapped = var_Details
-		properties["details"] = var_Details_mapped
-	}
-
-	return properties
-}
-
 type UserAuditDataMapper struct {
 }
 
@@ -365,7 +323,14 @@ func (m *UserAuditDataMapper) ToProperties(userAuditData *UserAuditData) map[str
 		var var_CreatedBy_mapped interface{}
 
 		var_CreatedBy_mapped = *var_CreatedBy
-		properties["createdBy"] = var_CreatedBy_mapped
+
+		var_CreatedBy_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_CreatedBy_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["createdBy"] = var_CreatedBy_packed
 	}
 
 	var_UpdatedBy := userAuditData.UpdatedBy
@@ -374,7 +339,14 @@ func (m *UserAuditDataMapper) ToProperties(userAuditData *UserAuditData) map[str
 		var var_UpdatedBy_mapped interface{}
 
 		var_UpdatedBy_mapped = *var_UpdatedBy
-		properties["updatedBy"] = var_UpdatedBy_mapped
+
+		var_UpdatedBy_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_UpdatedBy_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["updatedBy"] = var_UpdatedBy_packed
 	}
 
 	var_CreatedOn := userAuditData.CreatedOn
@@ -383,7 +355,14 @@ func (m *UserAuditDataMapper) ToProperties(userAuditData *UserAuditData) map[str
 		var var_CreatedOn_mapped interface{}
 
 		var_CreatedOn_mapped = *var_CreatedOn
-		properties["createdOn"] = var_CreatedOn_mapped
+
+		var_CreatedOn_packed, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(var_CreatedOn_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["createdOn"] = var_CreatedOn_packed
 	}
 
 	var_UpdatedOn := userAuditData.UpdatedOn
@@ -392,7 +371,14 @@ func (m *UserAuditDataMapper) ToProperties(userAuditData *UserAuditData) map[str
 		var var_UpdatedOn_mapped interface{}
 
 		var_UpdatedOn_mapped = *var_UpdatedOn
-		properties["updatedOn"] = var_UpdatedOn_mapped
+
+		var_UpdatedOn_packed, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(var_UpdatedOn_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["updatedOn"] = var_UpdatedOn_packed
 	}
 	return properties
 }
@@ -456,46 +442,4 @@ func (m *UserAuditDataMapper) FromProperties(properties map[string]interface{}) 
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
-}
-
-func (m *UserAuditDataMapper) ToUnstructured(userAuditData *UserAuditData) unstructured.Unstructured {
-	var properties unstructured.Unstructured = make(unstructured.Unstructured)
-
-	var_CreatedBy := userAuditData.CreatedBy
-
-	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped interface{}
-
-		var_CreatedBy_mapped = *var_CreatedBy
-		properties["createdBy"] = var_CreatedBy_mapped
-	}
-
-	var_UpdatedBy := userAuditData.UpdatedBy
-
-	if var_UpdatedBy != nil {
-		var var_UpdatedBy_mapped interface{}
-
-		var_UpdatedBy_mapped = *var_UpdatedBy
-		properties["updatedBy"] = var_UpdatedBy_mapped
-	}
-
-	var_CreatedOn := userAuditData.CreatedOn
-
-	if var_CreatedOn != nil {
-		var var_CreatedOn_mapped interface{}
-
-		var_CreatedOn_mapped = *var_CreatedOn
-		properties["createdOn"] = var_CreatedOn_mapped
-	}
-
-	var_UpdatedOn := userAuditData.UpdatedOn
-
-	if var_UpdatedOn != nil {
-		var var_UpdatedOn_mapped interface{}
-
-		var_UpdatedOn_mapped = *var_UpdatedOn
-		properties["updatedOn"] = var_UpdatedOn_mapped
-	}
-
-	return properties
 }

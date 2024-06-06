@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var ListType = listType{}
@@ -33,6 +34,14 @@ func (o listType) Serialize(value interface{}) (interface{}, error) {
 
 func (o listType) UnPack(value interface{}) (interface{}, error) {
 	return value, nil
+}
+
+func (o listType) PackStruct(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
+}
+
+func (o listType) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return value.AsInterface(), nil
 }
 
 func (o listType) Pointer(required bool) any {

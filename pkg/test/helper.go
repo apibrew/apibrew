@@ -27,13 +27,13 @@ func CheckTwoRecordEquals(t *testing.T, resource *model.Resource, a abs.RecordLi
 
 		typeHelper := types.ByResourcePropertyType(prop.Type)
 
-		va, err := typeHelper.UnPack(a.GetStructProperty(prop.Name))
+		va, err := typeHelper.UnPack(a.GetProperty(prop.Name))
 
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		vb, err := typeHelper.UnPack(b.GetStructProperty(prop.Name))
+		vb, err := typeHelper.UnPack(b.GetProperty(prop.Name))
 
 		if err != nil {
 			t.Error(err)

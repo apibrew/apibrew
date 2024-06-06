@@ -24,6 +24,7 @@ type ResourceLike interface {
 type RecordLike interface {
 	Keys() []string
 	GetProperty(key string) interface{}
+	GetPropertyWithDefault(key string, defaultValue interface{}) interface{}
 	SetProperty(key string, value interface{}) RecordLike
 	GetStructProperty(key string) *structpb.Value
 	SetStructProperty(key string, value *structpb.Value) RecordLike
@@ -42,6 +43,16 @@ type RecordLike interface {
 
 type record map[string]interface{}
 
+func (r *record) GetPropertyWithDefault(key string, defaultValue interface{}) interface{} {
+	value, ok := (*r)[key]
+
+	if !ok {
+		return defaultValue
+	}
+
+	return value
+}
+
 func (r *record) GetProperty(key string) interface{} {
 	return (*r)[key]
 }
@@ -49,9 +60,6 @@ func (r *record) GetProperty(key string) interface{} {
 func (r *record) SetProperty(key string, value interface{}) RecordLike {
 	switch typedValue := value.(type) {
 	case bool:
-	case int32:
-	case int64:
-	case float32:
 	case float64:
 	case string:
 	case []interface{}:

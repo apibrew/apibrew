@@ -466,9 +466,7 @@ func (r *recordService) applyBackReferences(ctx context.Context, resource *model
 
 						for _, item := range gotVal.([]interface{}) {
 							st := item.(map[string]interface{})
-							st[backRef.Property] = structpb.NewStructValue(&structpb.Struct{Fields: map[string]*structpb.Value{
-								"id": structpb.NewStringValue(util.GetRecordId(record)),
-							}})
+							st[backRef.Property] = util.Kv("id", util.GetRecordId(record))
 
 							backRefNewRecords = append(backRefNewRecords, abs.NewRecordLikeWithProperties(st))
 						}

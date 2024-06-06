@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var ObjectType = objectType{}
@@ -37,6 +38,18 @@ func (o objectType) Serialize(value interface{}) (interface{}, error) {
 
 func (o objectType) UnPack(value interface{}) (interface{}, error) {
 	return value, nil
+}
+
+func (o objectType) PackStruct(value interface{}) (*structpb.Value, error) {
+	if nv, ok := value.(*interface{}); ok {
+		return o.PackStruct(*nv)
+	}
+
+	return structpb.NewValue(value)
+}
+
+func (o objectType) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return value.AsInterface(), nil
 }
 
 func (o objectType) Pointer(required bool) any {

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var ReferenceType = referenceType{}
@@ -30,6 +31,30 @@ func (u referenceType) UnPack(val interface{}) (interface{}, error) {
 	}
 
 	return val, nil
+}
+
+func (u referenceType) PackStruct(value interface{}) (*structpb.Value, error) {
+	st, err := structpb.NewStruct(value.(map[string]interface{}))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return structpb.NewStructValue(st), nil
+}
+
+func (u referenceType) UnPackStruct(val *structpb.Value) (interface{}, error) {
+	if val == nil {
+		return nil, nil
+	}
+
+	if val.GetStringValue() != "" {
+		return map[string]interface{}{
+			"id": val.GetStringValue(),
+		}, nil
+	}
+
+	return val.GetStructValue().AsMap(), nil
 }
 
 func (u referenceType) Default() any {

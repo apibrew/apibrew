@@ -35,7 +35,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 
 		for _, property := range resource.Properties {
 			exists := record.HasProperty(property.Name)
-			packedVal := record.GetStructProperty(property.Name)
+			packedVal := record.GetProperty(property.Name)
 
 			if helper.IsPropertyOmitted(property) {
 				continue
@@ -62,7 +62,7 @@ func (p *sqlBackend) recordInsert(ctx context.Context, runner helper.QueryRunner
 					if referencedResource == nil {
 						return errors.LogicalError.WithDetails("Referenced resource not found: " + referenceNamespace + "/" + property.Reference.Resource)
 					}
-					item, err := p.resolveReference(packedVal.GetStructValue().AsMap(), args.Add, referencedResource)
+					item, err := p.resolveReference(packedVal.(map[string]interface{}), args.Add, referencedResource)
 
 					if err != nil {
 						return err

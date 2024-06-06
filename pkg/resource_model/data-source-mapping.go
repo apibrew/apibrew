@@ -8,7 +8,6 @@ package resource_model
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 )
@@ -52,8 +51,15 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]inter
 	if var_Id != nil {
 		var var_Id_mapped interface{}
 
-		var_Id_mapped = var_Id.String()
-		properties["id"] = var_Id_mapped
+		var_Id_mapped = *var_Id
+
+		var_Id_packed, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(var_Id_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["id"] = var_Id_packed
 	}
 
 	var_Version := dataSource.Version
@@ -61,7 +67,13 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]inter
 	var var_Version_mapped interface{}
 
 	var_Version_mapped = var_Version
-	properties["version"] = var_Version_mapped
+	var_Version_packed, err := types.ByResourcePropertyType(model.ResourceProperty_INT32).Pack(var_Version_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["version"] = var_Version_packed
 
 	var_AuditData := dataSource.AuditData
 
@@ -69,7 +81,14 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]inter
 		var var_AuditData_mapped interface{}
 
 		var_AuditData_mapped = DataSourceAuditDataMapperInstance.ToProperties(var_AuditData)
-		properties["auditData"] = var_AuditData_mapped
+
+		var_AuditData_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRUCT).Pack(var_AuditData_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["auditData"] = var_AuditData_packed
 	}
 
 	var_Name := dataSource.Name
@@ -77,21 +96,39 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]inter
 	var var_Name_mapped interface{}
 
 	var_Name_mapped = var_Name
-	properties["name"] = var_Name_mapped
+	var_Name_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Name_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["name"] = var_Name_packed
 
 	var_Description := dataSource.Description
 
 	var var_Description_mapped interface{}
 
 	var_Description_mapped = var_Description
-	properties["description"] = var_Description_mapped
+	var_Description_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Description_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["description"] = var_Description_packed
 
 	var_Backend := dataSource.Backend
 
 	var var_Backend_mapped interface{}
 
 	var_Backend_mapped = var_Backend
-	properties["backend"] = var_Backend_mapped
+	var_Backend_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_Backend_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["backend"] = var_Backend_packed
 
 	var_Options := dataSource.Options
 
@@ -108,7 +145,13 @@ func (m *DataSourceMapper) ToProperties(dataSource *DataSource) map[string]inter
 		var_Options_st[key] = var_1x_mapped
 	}
 	var_Options_mapped = var_Options_st
-	properties["options"] = var_Options_mapped
+	var_Options_packed, err := types.ByResourcePropertyType(model.ResourceProperty_MAP).Pack(var_Options_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["options"] = var_Options_packed
 	return properties
 }
 
@@ -212,76 +255,6 @@ func (m *DataSourceMapper) FromProperties(properties map[string]interface{}) *Da
 	return s
 }
 
-func (m *DataSourceMapper) ToUnstructured(dataSource *DataSource) unstructured.Unstructured {
-	var properties unstructured.Unstructured = make(unstructured.Unstructured)
-	properties["type"] = "system/DataSource"
-
-	var_Id := dataSource.Id
-
-	if var_Id != nil {
-		var var_Id_mapped interface{}
-
-		var_Id_mapped = var_Id.String()
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Version := dataSource.Version
-
-	var var_Version_mapped interface{}
-
-	var_Version_mapped = var_Version
-	properties["version"] = var_Version_mapped
-
-	var_AuditData := dataSource.AuditData
-
-	if var_AuditData != nil {
-		var var_AuditData_mapped interface{}
-
-		var_AuditData_mapped = DataSourceAuditDataMapperInstance.ToUnstructured(var_AuditData)
-		properties["auditData"] = var_AuditData_mapped
-	}
-
-	var_Name := dataSource.Name
-
-	var var_Name_mapped interface{}
-
-	var_Name_mapped = var_Name
-	properties["name"] = var_Name_mapped
-
-	var_Description := dataSource.Description
-
-	var var_Description_mapped interface{}
-
-	var_Description_mapped = var_Description
-	properties["description"] = var_Description_mapped
-
-	var_Backend := dataSource.Backend
-
-	var var_Backend_mapped interface{}
-
-	var_Backend_mapped = var_Backend
-	properties["backend"] = var_Backend_mapped
-
-	var_Options := dataSource.Options
-
-	var var_Options_mapped interface{}
-
-	var var_Options_st map[string]interface{} = make(map[string]interface{})
-	for key, value := range var_Options {
-
-		var_1x := value
-		var var_1x_mapped interface{}
-
-		var_1x_mapped = var_1x
-
-		var_Options_st[key] = var_1x_mapped
-	}
-	var_Options_mapped = var_Options_st
-	properties["options"] = var_Options_mapped
-
-	return properties
-}
-
 type DataSourceAuditDataMapper struct {
 }
 
@@ -311,7 +284,14 @@ func (m *DataSourceAuditDataMapper) ToProperties(dataSourceAuditData *DataSource
 		var var_CreatedBy_mapped interface{}
 
 		var_CreatedBy_mapped = *var_CreatedBy
-		properties["createdBy"] = var_CreatedBy_mapped
+
+		var_CreatedBy_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_CreatedBy_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["createdBy"] = var_CreatedBy_packed
 	}
 
 	var_UpdatedBy := dataSourceAuditData.UpdatedBy
@@ -320,7 +300,14 @@ func (m *DataSourceAuditDataMapper) ToProperties(dataSourceAuditData *DataSource
 		var var_UpdatedBy_mapped interface{}
 
 		var_UpdatedBy_mapped = *var_UpdatedBy
-		properties["updatedBy"] = var_UpdatedBy_mapped
+
+		var_UpdatedBy_packed, err := types.ByResourcePropertyType(model.ResourceProperty_STRING).Pack(var_UpdatedBy_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["updatedBy"] = var_UpdatedBy_packed
 	}
 
 	var_CreatedOn := dataSourceAuditData.CreatedOn
@@ -329,7 +316,14 @@ func (m *DataSourceAuditDataMapper) ToProperties(dataSourceAuditData *DataSource
 		var var_CreatedOn_mapped interface{}
 
 		var_CreatedOn_mapped = *var_CreatedOn
-		properties["createdOn"] = var_CreatedOn_mapped
+
+		var_CreatedOn_packed, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(var_CreatedOn_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["createdOn"] = var_CreatedOn_packed
 	}
 
 	var_UpdatedOn := dataSourceAuditData.UpdatedOn
@@ -338,7 +332,14 @@ func (m *DataSourceAuditDataMapper) ToProperties(dataSourceAuditData *DataSource
 		var var_UpdatedOn_mapped interface{}
 
 		var_UpdatedOn_mapped = *var_UpdatedOn
-		properties["updatedOn"] = var_UpdatedOn_mapped
+
+		var_UpdatedOn_packed, err := types.ByResourcePropertyType(model.ResourceProperty_TIMESTAMP).Pack(var_UpdatedOn_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["updatedOn"] = var_UpdatedOn_packed
 	}
 	return properties
 }
@@ -402,46 +403,4 @@ func (m *DataSourceAuditDataMapper) FromProperties(properties map[string]interfa
 		s.UpdatedOn = var_UpdatedOn_mapped
 	}
 	return s
-}
-
-func (m *DataSourceAuditDataMapper) ToUnstructured(dataSourceAuditData *DataSourceAuditData) unstructured.Unstructured {
-	var properties unstructured.Unstructured = make(unstructured.Unstructured)
-
-	var_CreatedBy := dataSourceAuditData.CreatedBy
-
-	if var_CreatedBy != nil {
-		var var_CreatedBy_mapped interface{}
-
-		var_CreatedBy_mapped = *var_CreatedBy
-		properties["createdBy"] = var_CreatedBy_mapped
-	}
-
-	var_UpdatedBy := dataSourceAuditData.UpdatedBy
-
-	if var_UpdatedBy != nil {
-		var var_UpdatedBy_mapped interface{}
-
-		var_UpdatedBy_mapped = *var_UpdatedBy
-		properties["updatedBy"] = var_UpdatedBy_mapped
-	}
-
-	var_CreatedOn := dataSourceAuditData.CreatedOn
-
-	if var_CreatedOn != nil {
-		var var_CreatedOn_mapped interface{}
-
-		var_CreatedOn_mapped = *var_CreatedOn
-		properties["createdOn"] = var_CreatedOn_mapped
-	}
-
-	var_UpdatedOn := dataSourceAuditData.UpdatedOn
-
-	if var_UpdatedOn != nil {
-		var var_UpdatedOn_mapped interface{}
-
-		var_UpdatedOn_mapped = *var_UpdatedOn
-		properties["updatedOn"] = var_UpdatedOn_mapped
-	}
-
-	return properties
 }

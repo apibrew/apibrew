@@ -40,7 +40,7 @@ func (w *Writer) WriteResource(resource *resource_model.Resource) (unstructured.
 		resource = formats.FixResourceForApply(resource)
 	}
 
-	var data = resource_model.ResourceMapperInstance.ToUnstructured(resource)
+	var data = resource_model.ResourceMapperInstance.ToRecord(resource).MapCopy()
 
 	data = fixBeforeWrite(data).(unstructured.Unstructured)
 

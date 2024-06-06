@@ -1,7 +1,7 @@
 package types
 
 import (
-	"fmt"
+	"google.golang.org/protobuf/types/known/structpb"
 	"strconv"
 )
 
@@ -16,11 +16,22 @@ func (i int32Type) Equals(a, b interface{}) bool {
 }
 
 func (i int32Type) Pack(value interface{}) (interface{}, error) {
-	return convertToInt32(value)
+	return float64(value.(int32)), nil
 }
 
 func (i int32Type) UnPack(value interface{}) (interface{}, error) {
-	return convertToInt32(value)
+	if value == nil {
+		return nil, nil
+	}
+	return int32(value.(float64)), nil
+}
+
+func (i int32Type) PackStruct(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
+}
+
+func (i int32Type) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return int32(value.GetNumberValue()), nil
 }
 
 func (i int32Type) Default() any {
@@ -41,35 +52,4 @@ func (i int32Type) String(val any) string {
 
 func (i int32Type) IsEmpty(value any) bool {
 	return value == nil
-}
-
-func convertToInt32(val interface{}) (int32, error) {
-	switch v := val.(type) {
-	case int:
-		return int32(v), nil
-	case int8:
-		return int32(v), nil
-	case int16:
-		return int32(v), nil
-	case int32:
-		return int32(v), nil
-	case int64:
-		return int32(v), nil
-	case uint:
-		return int32(v), nil
-	case uint8:
-		return int32(v), nil
-	case uint16:
-		return int32(v), nil
-	case uint32:
-		return int32(v), nil
-	case uint64:
-		return int32(v), nil
-	case float32:
-		return int32(v), nil
-	case float64:
-		return int32(v), nil
-	default:
-		return 0, fmt.Errorf("unsupported type: %T", v)
-	}
 }

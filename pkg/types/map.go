@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var MapType = mapType{}
@@ -33,6 +34,14 @@ func (o mapType) Serialize(value interface{}) (interface{}, error) {
 
 func (o mapType) UnPack(value interface{}) (interface{}, error) {
 	return value, nil
+}
+
+func (o mapType) PackStruct(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
+}
+
+func (o mapType) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return value.AsInterface(), nil
 }
 
 func (o mapType) Pointer(required bool) any {

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var Float64Type = float64Type{}
@@ -20,6 +21,13 @@ func (d float64Type) Pack(value interface{}) (interface{}, error) {
 
 func (d float64Type) UnPack(value interface{}) (interface{}, error) {
 	return value.(float64), nil
+}
+func (d float64Type) PackStruct(value interface{}) (*structpb.Value, error) {
+	return structpb.NewValue(value)
+}
+
+func (d float64Type) UnPackStruct(value *structpb.Value) (interface{}, error) {
+	return value.GetNumberValue(), nil
 }
 
 func (d float64Type) Pointer(required bool) any {

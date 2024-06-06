@@ -73,31 +73,31 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 		return nil
 	}
 
-	var namespace = record.GetProperty("namespace").(map[string]interface{})["name"].(string)
+	var namespace = record.GetPropertyWithDefault("namespace", util.Kv("name", "")).(map[string]interface{})["name"].(string)
 
 	var resource = &model.Resource{
-		Id:              record.GetProperty("id").(string),
-		Name:            record.GetProperty("name").(string),
+		Id:              record.GetPropertyWithDefault("id", "").(string),
+		Name:            record.GetPropertyWithDefault("name", "").(string),
 		Namespace:       namespace,
-		Virtual:         record.GetProperty("virtual").(bool),
-		Abstract:        record.GetProperty("abstract").(bool),
-		Immutable:       record.GetProperty("immutable").(bool),
-		CheckReferences: record.GetProperty("checkReferences").(bool),
+		Virtual:         record.GetPropertyWithDefault("virtual", false).(bool),
+		Abstract:        record.GetPropertyWithDefault("abstract", false).(bool),
+		Immutable:       record.GetPropertyWithDefault("immutable", false).(bool),
+		CheckReferences: record.GetPropertyWithDefault("checkReferences", false).(bool),
 		SourceConfig: &model.ResourceSourceConfig{
-			DataSource: record.GetProperty("dataSource").(map[string]interface{})["name"].(string),
-			Entity:     record.GetProperty("entity").(string),
-			Catalog:    record.GetProperty("catalog").(string),
+			DataSource: record.GetPropertyWithDefault("dataSource", util.Kv("name", "")).(map[string]interface{})["name"].(string),
+			Entity:     record.GetPropertyWithDefault("entity", "").(string),
+			Catalog:    record.GetPropertyWithDefault("catalog", "").(string),
 		},
-		Properties: util.ArrayMap(util.MapToArray(record.GetProperty("properties").(map[string]interface{})), func(t util.MapEntry[interface{}]) *model.ResourceProperty {
+		Properties: util.ArrayMap(util.MapToArray(record.GetPropertyWithDefault("properties", emptyMap()).(map[string]interface{})), func(t util.MapEntry[interface{}]) *model.ResourceProperty {
 			return ResourcePropertyFromRecord(t.Key, abs.NewRecordLikeWithProperties(t.Val.(map[string]interface{})))
 		}),
-		Annotations: convertMap(record.GetProperty("annotations").(map[string]interface{}), func(v interface{}) string {
+		Annotations: convertMap(record.GetPropertyWithDefault("annotations", emptyMap()).(map[string]interface{}), func(v interface{}) string {
 			return v.(string)
 		}),
 	}
 
 	if record.HasProperty("indexes") {
-		list := record.GetProperty("indexes").([]interface{})
+		list := record.GetPropertyWithDefault("indexes", emptyMap()).([]interface{})
 
 		resource.Indexes = make([]*model.ResourceIndex, 0)
 
@@ -118,12 +118,12 @@ func ResourceFromRecord(record abs.RecordLike) *model.Resource {
 
 	if record.HasProperty("title") {
 		resource.Title = new(string)
-		*resource.Title = record.GetProperty("title").(string)
+		*resource.Title = record.GetPropertyWithDefault("title", "").(string)
 	}
 
 	if record.HasProperty("description") {
 		resource.Description = new(string)
-		*resource.Description = record.GetProperty("description").(string)
+		*resource.Description = record.GetPropertyWithDefault("description", "").(string)
 	}
 
 	return resource
@@ -212,4 +212,8 @@ func ResourceTypeToValue(resource *model.Resource, subType *model.ResourceSubTyp
 		"description": subType.Description,
 		"properties":  properties,
 	}
+}
+
+func emptyMap() map[string]interface{} {
+	return make(map[string]interface{})
 }

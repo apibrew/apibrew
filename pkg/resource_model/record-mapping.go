@@ -8,7 +8,6 @@ package resource_model
 
 import (
 	"github.com/apibrew/apibrew/pkg/abs"
-	"github.com/apibrew/apibrew/pkg/formats/unstructured"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/types"
 )
@@ -51,8 +50,15 @@ func (m *RecordMapper) ToProperties(record *Record) map[string]interface{} {
 	if var_Id != nil {
 		var var_Id_mapped interface{}
 
-		var_Id_mapped = var_Id.String()
-		properties["id"] = var_Id_mapped
+		var_Id_mapped = *var_Id
+
+		var_Id_packed, err := types.ByResourcePropertyType(model.ResourceProperty_UUID).Pack(var_Id_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["id"] = var_Id_packed
 	}
 
 	var_Properties := record.Properties
@@ -60,7 +66,13 @@ func (m *RecordMapper) ToProperties(record *Record) map[string]interface{} {
 	var var_Properties_mapped interface{}
 
 	var_Properties_mapped = var_Properties
-	properties["properties"] = var_Properties_mapped
+	var_Properties_packed, err := types.ByResourcePropertyType(model.ResourceProperty_OBJECT).Pack(var_Properties_mapped)
+
+	if err != nil {
+		panic(err)
+	}
+
+	properties["properties"] = var_Properties_packed
 
 	var_PackedProperties := record.PackedProperties
 
@@ -78,7 +90,14 @@ func (m *RecordMapper) ToProperties(record *Record) map[string]interface{} {
 			var_PackedProperties_l = append(var_PackedProperties_l, var_5x_mapped)
 		}
 		var_PackedProperties_mapped = var_PackedProperties_l
-		properties["packedProperties"] = var_PackedProperties_mapped
+
+		var_PackedProperties_packed, err := types.ByResourcePropertyType(model.ResourceProperty_LIST).Pack(var_PackedProperties_mapped)
+
+		if err != nil {
+			panic(err)
+		}
+
+		properties["packedProperties"] = var_PackedProperties_packed
 	}
 	return properties
 }
@@ -121,46 +140,4 @@ func (m *RecordMapper) FromProperties(properties map[string]interface{}) *Record
 		s.PackedProperties = var_PackedProperties_mapped
 	}
 	return s
-}
-
-func (m *RecordMapper) ToUnstructured(record *Record) unstructured.Unstructured {
-	var properties unstructured.Unstructured = make(unstructured.Unstructured)
-	properties["type"] = "system/Record"
-
-	var_Id := record.Id
-
-	if var_Id != nil {
-		var var_Id_mapped interface{}
-
-		var_Id_mapped = var_Id.String()
-		properties["id"] = var_Id_mapped
-	}
-
-	var_Properties := record.Properties
-
-	var var_Properties_mapped interface{}
-
-	var_Properties_mapped = var_Properties
-	properties["properties"] = var_Properties_mapped
-
-	var_PackedProperties := record.PackedProperties
-
-	if var_PackedProperties != nil {
-		var var_PackedProperties_mapped interface{}
-
-		var var_PackedProperties_l []interface{}
-		for _, value := range var_PackedProperties {
-
-			var_5x := value
-			var var_5x_mapped interface{}
-
-			var_5x_mapped = var_5x
-
-			var_PackedProperties_l = append(var_PackedProperties_l, var_5x_mapped)
-		}
-		var_PackedProperties_mapped = var_PackedProperties_l
-		properties["packedProperties"] = var_PackedProperties_mapped
-	}
-
-	return properties
 }
