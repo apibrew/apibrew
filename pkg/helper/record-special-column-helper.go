@@ -64,7 +64,7 @@ func (h RecordSpecialColumnHelper) SetCreatedOn(createdOn *timestamppb.Timestamp
 
 	h.ensureAuditData()
 
-	h.Record.GetStructProperty("auditData").GetStructValue().Fields["createdOn"] = val
+	h.Record.GetProperty("auditData").(map[string]interface{})["createdOn"] = val
 }
 
 func (h RecordSpecialColumnHelper) ensureAuditData() {
@@ -103,7 +103,7 @@ func (h RecordSpecialColumnHelper) SetUpdatedOn(updatedOn *timestamppb.Timestamp
 
 	h.ensureAuditData()
 
-	h.Record.GetStructProperty("auditData").GetStructValue().Fields["updatedOn"] = val
+	h.Record.GetProperty("auditData").(map[string]interface{})["updatedOn"] = val
 }
 
 func (h RecordSpecialColumnHelper) SetId(id string) {

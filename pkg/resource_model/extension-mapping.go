@@ -41,7 +41,7 @@ func (m *ExtensionMapper) ToRecord(extension *Extension) abs.RecordLike {
 }
 
 func (m *ExtensionMapper) FromRecord(record abs.RecordLike) *Extension {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *ExtensionMapper) ToProperties(extension *Extension) map[string]interface{} {

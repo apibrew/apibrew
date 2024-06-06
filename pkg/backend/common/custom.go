@@ -8,8 +8,8 @@ import (
 
 type CustomType struct {
 	CustomEquals  func(a, b interface{}) bool
-	CustomPack    func(value interface{}) (*structpb.Value, error)
-	CustomUnPack  func(val *structpb.Value) (interface{}, error)
+	CustomPack    func(value interface{}) (interface{}, error)
+	CustomUnPack  func(val interface{}) (interface{}, error)
 	CustomDefault func() any
 	CustomPointer func(required bool) any
 	CustomString  func(val any) string
@@ -24,7 +24,7 @@ func (u CustomType) Equals(a, b interface{}) bool {
 	}
 }
 
-func (u CustomType) Pack(val interface{}) (*structpb.Value, error) {
+func (u CustomType) Pack(val interface{}) (interface{}, error) {
 	if u.CustomPack == nil {
 		return structpb.NewValue(val)
 	} else {
@@ -32,9 +32,9 @@ func (u CustomType) Pack(val interface{}) (*structpb.Value, error) {
 	}
 }
 
-func (u CustomType) UnPack(val *structpb.Value) (interface{}, error) {
+func (u CustomType) UnPack(val interface{}) (interface{}, error) {
 	if u.CustomPack == nil {
-		return structpb.NewValue(val)
+		return val, nil
 	} else {
 		return u.CustomUnPack(val)
 	}

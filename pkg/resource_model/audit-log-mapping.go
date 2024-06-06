@@ -41,7 +41,7 @@ func (m *AuditLogMapper) ToRecord(auditLog *AuditLog) abs.RecordLike {
 }
 
 func (m *AuditLogMapper) FromRecord(record abs.RecordLike) *AuditLog {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *AuditLogMapper) ToProperties(auditLog *AuditLog) map[string]interface{} {

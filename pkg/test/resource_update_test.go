@@ -150,7 +150,7 @@ package test
 //
 //	recordCreateResult1, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []abs.RecordLike{
 //		{
-//			Properties: map[string]*structpb.Value{
+//			Properties: map[string]interface{}{
 //				"prop-1": structpb.NewStringValue("test-123321"),
 //			},
 //		},
@@ -196,7 +196,7 @@ package test
 //
 //	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []abs.RecordLike{
 //		{
-//			Properties: map[string]*structpb.Value{
+//			Properties: map[string]interface{}{
 //				"prop-1": structpb.NewStringValue("test-123321"),
 //				"prop-2": structpb.NewStringValue("test-12332144"),
 //			},
@@ -243,7 +243,7 @@ package test
 //
 //	_, err = recordClient.Update(setup.Ctx, &stub.UpdateRecordRequest{Resource: resource1.Name, Records: []abs.RecordLike{
 //		{
-//			Properties: map[string]*structpb.Value{
+//			Properties: map[string]interface{}{
 //				"id":     recordCreateResult1.Records[0].Properties["id"],
 //				"prop-1": structpb.NewStringValue("test-123321"),
 //				"prop-2": structpb.NewStringValue("test-12332144"),
@@ -294,7 +294,7 @@ package test
 //
 //	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{Resource: resource1.Name, Records: []abs.RecordLike{
 //		{
-//			Properties: map[string]*structpb.Value{
+//			Properties: map[string]interface{}{
 //				"prop-1": structpb.NewStringValue("test-123321"),
 //				"prop-2": structpb.NewStringValue("test-12332144"),
 //			},

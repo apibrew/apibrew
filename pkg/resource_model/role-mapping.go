@@ -41,7 +41,7 @@ func (m *RoleMapper) ToRecord(role *Role) abs.RecordLike {
 }
 
 func (m *RoleMapper) FromRecord(record abs.RecordLike) *Role {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *RoleMapper) ToProperties(role *Role) map[string]interface{} {

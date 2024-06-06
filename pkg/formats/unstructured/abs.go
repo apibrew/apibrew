@@ -43,7 +43,7 @@ func MergeOut(u Unstructured, un Unstructured, nested bool) {
 }
 
 func FromRecord(record abs.RecordLike) (Unstructured, error) {
-	return record.Self(), nil
+	return record.MapCopy(), nil
 }
 
 func ToRecord(u Unstructured) (abs.RecordLike, error) {

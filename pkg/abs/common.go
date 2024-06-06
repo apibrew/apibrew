@@ -37,7 +37,7 @@ type RecordLike interface {
 	DeleteProperty(s string)
 	Merge(appliedRecord RecordLike) RecordLike
 	AsInterface(key string) interface{}
-	Self() map[string]interface{}
+	MapCopy() map[string]interface{}
 }
 
 type record map[string]interface{}
@@ -47,18 +47,37 @@ func (r *record) GetProperty(key string) interface{} {
 }
 
 func (r *record) SetProperty(key string, value interface{}) RecordLike {
+	switch typedValue := value.(type) {
+	case bool:
+	case int32:
+	case int64:
+	case float32:
+	case float64:
+	case string:
+	case []interface{}:
+	case map[string]interface{}:
+	default:
+		panic("unsupported type: " + reflect.TypeOf(typedValue).String())
+	}
+
 	(*r)[key] = value
 
 	return r
 }
 
-func (r *record) Self() map[string]interface{} {
-	return *r
+func (r *record) MapCopy() map[string]interface{} {
+	var result = make(map[string]interface{})
+
+	for key, value := range *r {
+		result[key] = value
+	}
+
+	return result
 }
 
 func (r *record) WithProperties(properties map[string]interface{}) RecordLike {
 	for key, value := range properties {
-		(*r)[key] = value
+		r.SetProperty(key, value)
 	}
 
 	return r
@@ -107,7 +126,7 @@ func (r *record) HasProperty(key string) bool {
 }
 
 func (r *record) EqualTo(updated RecordLike) bool {
-	if !reflect.DeepEqual(*r, updated.Self()) {
+	if !reflect.DeepEqual(*r, updated.MapCopy()) {
 		return false
 	}
 
@@ -145,7 +164,7 @@ func (r *record) GetStructProperty(key string) *structpb.Value {
 }
 
 func (r *record) SetStructProperty(key string, value *structpb.Value) RecordLike {
-	(*r)[key] = value.AsInterface()
+	r.SetProperty(key, value.AsInterface())
 
 	return r
 }
@@ -208,9 +227,15 @@ func RecordLikeAsRecords2(record []*model.Record) []RecordLike {
 	return records
 }
 
-func UpdateRecordsProperties(record RecordLike, properties map[string]*structpb.Value) {
+func UpdateRecordsStructProperties(record RecordLike, properties map[string]*structpb.Value) {
 	for key, value := range properties {
 		record.SetStructProperty(key, value)
+	}
+}
+
+func UpdateRecordsProperties(record RecordLike, properties map[string]interface{}) {
+	for key, value := range properties {
+		record.SetProperty(key, value)
 	}
 }
 

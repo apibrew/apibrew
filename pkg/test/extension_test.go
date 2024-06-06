@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 	"net"
 	"net/http"
@@ -20,15 +19,15 @@ import (
 )
 
 var simpleVirtualResourceRecords = []abs.RecordLike{
-	abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
-		"id":          structpb.NewStringValue("5429846c-a309-11ed-a8fc-0242ac120002"),
-		"name":        structpb.NewStringValue("rec-1"),
-		"description": structpb.NewStringValue("rec-1-desc"),
+	abs.NewRecordLikeWithProperties(map[string]interface{}{
+		"id":          "5429846c-a309-11ed-a8fc-0242ac120002",
+		"name":        "rec-1",
+		"description": "rec-1-desc",
 	}),
-	abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
-		"id":          structpb.NewStringValue("54298994-a309-11ed-a8fc-0242ac120002"),
-		"name":        structpb.NewStringValue("rec-2"),
-		"description": structpb.NewStringValue("rec-2-desc"),
+	abs.NewRecordLikeWithProperties(map[string]interface{}{
+		"id":          "54298994-a309-11ed-a8fc-0242ac120002",
+		"name":        "rec-2",
+		"description": "rec-2-desc",
 	}),
 }
 

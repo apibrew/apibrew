@@ -41,7 +41,7 @@ func (m *UserMapper) ToRecord(user *User) abs.RecordLike {
 }
 
 func (m *UserMapper) FromRecord(record abs.RecordLike) *User {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *UserMapper) ToProperties(user *User) map[string]interface{} {

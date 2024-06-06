@@ -469,7 +469,7 @@ func (m *`)
 		qw422016.E().S(typeName)
 //line templates/golang/mapping.qtpl:102
 		qw422016.N().S(`  {
-    return m.FromProperties(record.Self())
+    return m.FromProperties(record.MapCopy())
 }
 `)
 //line templates/golang/mapping.qtpl:105

@@ -80,7 +80,7 @@ func StreamGenerateStructDef(qw422016 *qt422016.Writer, value *structpb.Value) {
 //line templates/java/resource-def.qtpl:22
 		qw422016.N().S(`structpb.NewStructValue(&structpb.Struct{ Fields: map[string]*structpb.Value{ `)
 //line templates/java/resource-def.qtpl:25
-		for key, item := range value.(map[string]interface{}) {
+		for key, item := range value.GetStructValue().Fields {
 //line templates/java/resource-def.qtpl:25
 			qw422016.N().S(`"`)
 //line templates/java/resource-def.qtpl:26

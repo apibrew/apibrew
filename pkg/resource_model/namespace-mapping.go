@@ -41,7 +41,7 @@ func (m *NamespaceMapper) ToRecord(namespace *Namespace) abs.RecordLike {
 }
 
 func (m *NamespaceMapper) FromRecord(record abs.RecordLike) *Namespace {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *NamespaceMapper) ToProperties(namespace *Namespace) map[string]interface{} {

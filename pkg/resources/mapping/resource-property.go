@@ -4,41 +4,40 @@ import (
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/util"
-	"google.golang.org/protobuf/types/known/structpb"
 	"strings"
 )
 
-func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.Resource) abs.RecordLike {
-	properties := make(map[string]*structpb.Value)
+func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.Resource) map[string]interface{} {
+	properties := make(map[string]interface{})
 
 	if property.Title != nil {
-		properties["title"] = structpb.NewStringValue(*property.Title)
+		properties["title"] = *property.Title
 	}
 	if property.Description != nil {
-		properties["description"] = structpb.NewStringValue(*property.Description)
+		properties["description"] = *property.Description
 	}
-	properties["type"] = structpb.NewStringValue(property.Type.String())
+	properties["type"] = property.Type.String()
 
 	if property.Type == model.ResourceProperty_LIST || property.Type == model.ResourceProperty_MAP {
-		properties["item"] = structpb.NewStructValue(ResourcePropertyToRecord(property.Item, resource).ToStruct())
+		properties["item"] = ResourcePropertyToRecord(property.Item, resource)
 	}
 
 	if property.Type == model.ResourceProperty_STRUCT {
-		properties["typeRef"] = structpb.NewStringValue(*property.TypeRef)
+		properties["typeRef"] = *property.TypeRef
 	}
 
 	if property.Type == model.ResourceProperty_ENUM {
-		properties["enumValues"] = structpb.NewListValue(&structpb.ListValue{Values: util.ArrayMap(property.EnumValues, func(v string) *structpb.Value {
-			return structpb.NewStringValue(v)
-		})})
+		properties["enumValues"] = util.ArrayMap(property.EnumValues, func(v string) interface{} {
+			return v
+		})
 	}
 
-	properties["primary"] = structpb.NewBoolValue(property.Primary)
-	properties["required"] = structpb.NewBoolValue(property.Required)
-	properties["length"] = structpb.NewNumberValue(float64(property.Length))
-	properties["unique"] = structpb.NewBoolValue(property.Unique)
-	properties["immutable"] = structpb.NewBoolValue(property.Immutable)
-	properties["virtual"] = structpb.NewBoolValue(property.Virtual)
+	properties["primary"] = property.Primary
+	properties["required"] = property.Required
+	properties["length"] = int32(property.Length)
+	properties["unique"] = property.Unique
+	properties["immutable"] = property.Immutable
+	properties["virtual"] = property.Virtual
 
 	if property.Reference != nil {
 		referenceNamespace := property.Reference.Namespace
@@ -47,22 +46,24 @@ func ResourcePropertyToRecord(property *model.ResourceProperty, resource *model.
 		}
 
 		if property.BackReference != nil {
-			properties["backReference"] = structpb.NewStringValue(property.BackReference.Property)
+			properties["backReference"] = property.BackReference.Property
 		}
 
-		properties["reference"] = structpb.NewStringValue(referenceNamespace + "/" + property.Reference.Resource)
+		properties["reference"] = referenceNamespace + "/" + property.Reference.Resource
 	}
 
-	properties["defaultValue"] = property.DefaultValue
-	properties["exampleValue"] = property.ExampleValue
+	if property.DefaultValue != nil {
+		properties["defaultValue"] = property.DefaultValue.AsInterface()
+	}
+	if property.ExampleValue != nil {
+		properties["exampleValue"] = property.ExampleValue.AsInterface()
+	}
 
-	properties["annotations"], _ = structpb.NewValue(convertMap(property.Annotations, func(v string) interface{} {
+	properties["annotations"] = convertMap(property.Annotations, func(v string) interface{} {
 		return v
-	}))
+	})
 
-	MapSpecialColumnsToRecord(property, &properties)
-
-	return abs.NewRecordLikeWithStructProperties(properties)
+	return properties
 }
 
 func ResourcePropertyFromRecord(propertyName string, record abs.RecordLike) *model.ResourceProperty {
@@ -150,13 +151,10 @@ func ResourcePropertyFromRecord(propertyName string, record abs.RecordLike) *mod
 	}
 
 	if resourceProperty.Type == model.ResourceProperty_ENUM {
-		resourceProperty.EnumValues = util.ArrayMap(record.GetStructProperty("enumValues").GetListValue().GetValues(), func(v *structpb.Value) string {
-			return v.GetStringValue()
+		resourceProperty.EnumValues = util.ArrayMap(record.GetProperty("enumValues").([]interface{}), func(v interface{}) string {
+			return v.(string)
 		})
 	}
-
-	var properties = record.ToStruct().GetFields()
-	MapSpecialColumnsFromRecord(resourceProperty, &properties)
 
 	return resourceProperty
 }

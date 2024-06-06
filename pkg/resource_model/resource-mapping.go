@@ -41,7 +41,7 @@ func (m *ResourceMapper) ToRecord(resource *Resource) abs.RecordLike {
 }
 
 func (m *ResourceMapper) FromRecord(record abs.RecordLike) *Resource {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *ResourceMapper) ToProperties(resource *Resource) map[string]interface{} {

@@ -51,9 +51,9 @@ func TestResourceCreateRecordWithHistory(t *testing.T) {
 	createResp, err := recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "paper",
 		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
-			abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
-				"name":        structpb.NewStringValue("test-paper"),
-				"description": structpb.NewStringValue("descp-1"),
+			abs.NewRecordLikeWithProperties(map[string]interface{}{
+				"name":        "test-paper",
+				"description": "descp-1",
 			}),
 		}),
 	})

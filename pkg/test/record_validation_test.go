@@ -84,17 +84,13 @@ func TestRecordCreationValidationBasedOnTypes(t *testing.T) {
 func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
 	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
-		var properties = make(map[string]*structpb.Value, 3)
+		var properties = make(map[string]interface{}, 3)
 
-		properties[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
-		properties[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
-		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		properties[subCase.resource.Properties[0].Name] = fakeValidValue(subCase.recordType)
+		properties[subCase.resource.Properties[1].Name] = fakeValidValue(subCase.recordType)
+		properties[subCase.resource.Properties[2].Name] = fakeValidValue(subCase.recordType)
 
-		validRecord := &model.Record{
-			Properties: properties,
-		}
-
-		records = append(records, abs.RecordAsRecordLike(validRecord))
+		records = append(records, abs.NewRecordLikeWithProperties(properties))
 	}
 
 	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
@@ -138,22 +134,18 @@ func testRecordCreationValidationValidCase(ctx context.Context, t *testing.T, su
 func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
 	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
-		var properties = make(map[string]*structpb.Value, 3)
+		var properties = make(map[string]interface{}, 3)
 		typ := types.ByResourcePropertyType(subCase.recordType)
 
 		properties[subCase.resource.Properties[0].Name], _ = typ.Pack(typ.Default())
-		properties[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
-		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		properties[subCase.resource.Properties[1].Name] = fakeValidValue(subCase.recordType)
+		properties[subCase.resource.Properties[2].Name] = fakeValidValue(subCase.recordType)
 
 		if subCase.recordType == model.ResourceProperty_ENUM || subCase.recordType == model.ResourceProperty_STRUCT {
-			properties[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+			properties[subCase.resource.Properties[0].Name] = fakeValidValue(subCase.recordType)
 		}
 
-		validRecord := &model.Record{
-			Properties: properties,
-		}
-
-		records = append(records, abs.RecordAsRecordLike(validRecord))
+		records = append(records, abs.NewRecordLikeWithProperties(properties))
 	}
 
 	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
@@ -197,17 +189,13 @@ func testRecordCreationValidationDefaultValidCase(ctx context.Context, t *testin
 func testRecordUpdateValidationValidCase(ctx context.Context, t *testing.T, subCase TestRecordCreationValidationSubCase) {
 	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
-		var properties = make(map[string]*structpb.Value, 3)
+		var properties = make(map[string]interface{}, 3)
 
-		properties[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
-		properties[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
-		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeValidValue(subCase.recordType))
+		properties[subCase.resource.Properties[0].Name] = fakeValidValue(subCase.recordType)
+		properties[subCase.resource.Properties[1].Name] = fakeValidValue(subCase.recordType)
+		properties[subCase.resource.Properties[2].Name] = fakeValidValue(subCase.recordType)
 
-		validRecord := &model.Record{
-			Properties: properties,
-		}
-
-		records = append(records, abs.RecordAsRecordLike(validRecord))
+		records = append(records, abs.NewRecordLikeWithProperties(properties))
 	}
 
 	resp, err := recordClient.Create(ctx, &stub.CreateRecordRequest{
@@ -278,17 +266,13 @@ func testRecordCreationValidationInvalidCase(ctx context.Context, t *testing.T, 
 
 	var records []abs.RecordLike
 	for i := 0; i < 30; i += 3 {
-		var properties = make(map[string]*structpb.Value, 3)
+		var properties = make(map[string]interface{}, 3)
 
-		properties[subCase.resource.Properties[0].Name], _ = structpb.NewValue(fakeInvalidValue(subCase.recordType))
-		properties[subCase.resource.Properties[1].Name], _ = structpb.NewValue(fakeInvalidValue(subCase.recordType))
-		properties[subCase.resource.Properties[2].Name], _ = structpb.NewValue(fakeInvalidValue(subCase.recordType))
+		properties[subCase.resource.Properties[0].Name] = fakeInvalidValue(subCase.recordType)
+		properties[subCase.resource.Properties[1].Name] = fakeInvalidValue(subCase.recordType)
+		properties[subCase.resource.Properties[2].Name] = fakeInvalidValue(subCase.recordType)
 
-		validRecord := &model.Record{
-			Properties: properties,
-		}
-
-		records = append(records, abs.RecordAsRecordLike(validRecord))
+		records = append(records, abs.NewRecordLikeWithProperties(properties))
 	}
 
 	_, err := recordClient.Create(ctx, &stub.CreateRecordRequest{

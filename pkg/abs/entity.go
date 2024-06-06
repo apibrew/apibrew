@@ -2,7 +2,6 @@ package abs
 
 import (
 	"github.com/apibrew/apibrew/pkg/model"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 type ResourceIdentity struct {
@@ -26,6 +25,6 @@ type EntityMapper[Entity interface{}] interface {
 	ResourceIdentity() ResourceIdentity
 	ToRecord(entity Entity) RecordLike
 	FromRecord(record RecordLike) Entity
-	ToProperties(entity Entity) map[string]*structpb.Value
-	FromProperties(properties map[string]*structpb.Value) Entity
+	ToProperties(entity Entity) map[string]interface{}
+	FromProperties(properties map[string]interface{}) Entity
 }

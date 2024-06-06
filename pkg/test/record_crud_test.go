@@ -57,7 +57,7 @@ func TestComplexPayload1Success(t *testing.T) {
 		"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
 	})
 
-	abs.UpdateRecordsProperties(record1, st.GetFields())
+	abs.UpdateRecordsStructProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)
@@ -117,7 +117,7 @@ func TestComplexPayload1Success1(t *testing.T) {
 		"uuid":      "bdedf5b8-5179-11ed-bdc3-0242ac120002",
 	})
 
-	abs.UpdateRecordsProperties(record1, st.GetFields())
+	abs.UpdateRecordsStructProperties(record1, st.GetFields())
 
 	if err != nil {
 		t.Error(err)

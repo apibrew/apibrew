@@ -40,7 +40,7 @@ func (m *RecordMapper) ToRecord(record *Record) abs.RecordLike {
 }
 
 func (m *RecordMapper) FromRecord(record abs.RecordLike) *Record {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *RecordMapper) ToProperties(record *Record) map[string]interface{} {

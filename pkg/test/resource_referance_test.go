@@ -104,12 +104,12 @@ func TestResourceReferenceViolation(t *testing.T) {
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
 		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
-			abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
-				"name":        structpb.NewStringValue("test-book"),
-				"description": structpb.NewStringValue("descp-1"),
-				"author": util.MapStructValue(map[string]interface{}{
+			abs.NewRecordLikeWithProperties(map[string]interface{}{
+				"name":        "test-book",
+				"description": "descp-1",
+				"author": map[string]interface{}{
 					"id": "11c3135a-a4e3-11ed-b9df-0242ac120003",
-				}),
+				},
 			}),
 		}),
 	})
@@ -154,9 +154,9 @@ func TestResourceReferenceSuccess(t *testing.T) {
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "author",
 		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
-			abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
-				"name":        structpb.NewStringValue("test-author"),
-				"description": structpb.NewStringValue("descp-1"),
+			abs.NewRecordLikeWithProperties(map[string]interface{}{
+				"name":        "test-author",
+				"description": "descp-1",
 			}),
 		}),
 	})
@@ -169,12 +169,12 @@ func TestResourceReferenceSuccess(t *testing.T) {
 	_, err = recordClient.Create(setup.Ctx, &stub.CreateRecordRequest{
 		Resource: "book",
 		Records: abs.RecordLikeAsRecords([]abs.RecordLike{
-			abs.NewRecordLikeWithStructProperties(map[string]*structpb.Value{
+			abs.NewRecordLikeWithProperties(map[string]interface{}{
 				"name":        structpb.NewStringValue("test-book"),
 				"description": structpb.NewStringValue("descp-1"),
-				"author": util.MapStructValue(map[string]interface{}{
+				"author": map[string]interface{}{
 					"name": "test-author",
-				}),
+				},
 			}),
 		}),
 	})

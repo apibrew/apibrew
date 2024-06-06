@@ -41,7 +41,7 @@ func (m *PermissionMapper) ToRecord(permission *Permission) abs.RecordLike {
 }
 
 func (m *PermissionMapper) FromRecord(record abs.RecordLike) *Permission {
-	return m.FromProperties(record.Self())
+	return m.FromProperties(record.MapCopy())
 }
 
 func (m *PermissionMapper) ToProperties(permission *Permission) map[string]interface{} {

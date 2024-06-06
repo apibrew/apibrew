@@ -380,8 +380,8 @@ func (r *recordLister) scanRecord(record abs.RecordLike, rows *sql.Rows) error {
 	return nil
 }
 
-func (r *recordLister) mapRecordProperties(recordId string, resource *model.Resource, pathPrefix string, propertyPointers map[string]interface{}) (map[string]*structpb.Value, error) {
-	properties := make(map[string]*structpb.Value)
+func (r *recordLister) mapRecordProperties(recordId string, resource *model.Resource, pathPrefix string, propertyPointers map[string]interface{}) (map[string]interface{}, error) {
+	properties := make(map[string]interface{})
 
 	for _, cd := range r.colList {
 		propertyType := r.backend.options.TypeModifier(cd.propertyType)
@@ -438,8 +438,8 @@ func (r *recordLister) mapRecordProperties(recordId string, resource *model.Reso
 							return nil, err
 						}
 
-						properties[prop.Name] = structpb.NewStructValue(&structpb.Struct{Fields: nv})
-						v1 := properties[prop.Name].GetStructValue().Fields["id"].GetStringValue()
+						properties[prop.Name] = nv
+						v1 := properties[prop.Name].(map[string]interface{})["id"].(string)
 						v2 := val.(map[string]interface{})["id"]
 						if v1 != v2 {
 							log.Print(properties[prop.Name], val)
@@ -683,16 +683,16 @@ func (r *recordLister) applyExpressionPair(resource *model.Resource, pair *model
 	return left, right, nil
 }
 
-func (r *recordLister) applyValue(value *structpb.Value) string {
-	if value.GetListValue() != nil {
-		list := value.GetListValue()
+func (r *recordLister) applyValue(value interface{}) string {
+	if value != nil {
+		list := value.([]interface{})
 		var c []string
-		for _, val := range list.Values {
-			c = append(c, r.val(val.AsInterface()))
+		for _, val := range list {
+			c = append(c, r.val(val))
 		}
 		return strings.Join(c, ",")
 	} else {
-		return r.val(value.AsInterface())
+		return r.val(value)
 	}
 }
 
