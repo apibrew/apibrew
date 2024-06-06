@@ -314,7 +314,6 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 		}
 
 		if existingRecord == nil {
-			log.Println("Record not found, creating new record", record.Properties)
 			records, err := r.CreateWithResource(ctx, resource, service.RecordCreateParams{
 				Namespace: resource.Namespace,
 				Resource:  resource.Name,
@@ -327,7 +326,6 @@ func (r *recordService) Apply(ctx context.Context, params service.RecordUpdatePa
 
 			result = append(result, records...)
 		} else {
-			log.Println("Record found, updating record", record.Properties)
 			if annotations.IsEnabled(annotations.FromCtx(ctx), annotations.IgnoreIfExists) {
 				result = append(result, record)
 				continue
