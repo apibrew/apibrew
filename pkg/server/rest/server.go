@@ -30,6 +30,7 @@ type Server interface {
 	ServeH2C(lis net.Listener)
 	ServeHttp(lis net.Listener)
 	ServeHttp2Tls(tls net.Listener)
+	Router() *mux.Router
 }
 
 type server struct {
@@ -47,6 +48,11 @@ type server struct {
 	pprofApi          Api
 	logApi            LogApi
 	versionApi        VersionApi
+	r                 *mux.Router
+}
+
+func (s *server) Router() *mux.Router {
+	return s.r
 }
 
 func (s *server) Init() {
@@ -188,6 +194,7 @@ func (s *server) configureRoutes() {
 		s.pprofApi.ConfigureRouter(r)
 	}
 
+	s.r = r
 	s.handler = c.Handler(r)
 }
 
