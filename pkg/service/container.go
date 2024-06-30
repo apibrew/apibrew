@@ -15,4 +15,5 @@ type Container interface {
 	GetBackendProviderService() BackendProviderService
 	GetBackendEventHandler() interface{}
 	GetAppConfig() *model.AppConfig
+	GetModules() []Module
 }
