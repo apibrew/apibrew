@@ -13,7 +13,7 @@ import (
 )
 
 var Modules = map[string]string{
-	"github.com/apibrew/nano/pkg":    "v1.0.34",
+	"github.com/apibrew/nano/pkg":    "v1.0.39",
 	"github.com/apibrew/metrics/pkg": "v1.0.17",
 }
 
