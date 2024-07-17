@@ -29,21 +29,21 @@ func getTypescriptType(resource *model.Resource, property *model.ResourcePropert
 	case model.ResourceProperty_ENUM:
 		return typescriptClassName(property.Name)
 	case model.ResourceProperty_OBJECT:
-		return "object"
+		return "any"
 	case model.ResourceProperty_LIST:
 		return getTypescriptType(resource, property.Item, true) + "[]"
 	case model.ResourceProperty_MAP:
 		return "{ [key: string]: " + getTypescriptType(resource, property.Item, true) + " }"
 	case model.ResourceProperty_TIME:
-		return "string | Date"
+		return "string"
 	case model.ResourceProperty_DATE:
-		return "string | Date"
+		return "string"
 	case model.ResourceProperty_TIMESTAMP:
-		return "string | Date"
+		return "string"
 	case model.ResourceProperty_UUID:
 		return "string"
 	case model.ResourceProperty_BYTES:
-		return "string | byte[]"
+		return "string"
 	case model.ResourceProperty_STRUCT:
 		return typescriptClassName(*property.TypeRef)
 	}
