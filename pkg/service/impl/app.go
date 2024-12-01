@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/apbr/flags"
+	"github.com/apibrew/apibrew/pkg/backend/dynamodb"
 	"github.com/apibrew/apibrew/pkg/backend/postgres"
 	"github.com/apibrew/apibrew/pkg/client"
 	"github.com/apibrew/apibrew/pkg/formats/executor"
@@ -192,5 +193,9 @@ func (app *App) setupBackends() {
 	app.backendProviderService.RegisterBackend(abs.BackendType{
 		Name:        "POSTGRESQL",
 		Constructor: postgres.NewPostgresResourceServiceBackend,
+	})
+	app.backendProviderService.RegisterBackend(abs.BackendType{
+		Name:        "DYNAMODB",
+		Constructor: dynamodb.NewDynamodbBackend,
 	})
 }

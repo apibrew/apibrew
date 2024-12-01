@@ -110,3 +110,17 @@ func Keys[T any](u map[string]T) []string {
 
 	return keys
 }
+
+func MapMerge[K comparable, T any](values map[K]T, values2 map[K]T) map[K]T {
+	var result = make(map[K]T)
+
+	for key, value := range values {
+		result[key] = value
+	}
+
+	for key, value := range values2 {
+		result[key] = value
+	}
+
+	return result
+}

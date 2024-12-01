@@ -563,7 +563,6 @@ func (r *resourceService) prepareSchemaMappings() {
 }
 
 func (r *resourceService) registerResourceToSchema(resource *model.Resource) {
-
 	r.schema.ResourceByNamespaceSlashName[resource.Namespace+"/"+resource.Name] = resource
 	r.schema.ResourcePropertiesByType[resource.Namespace+"/"+resource.Name] = r.mapPropertiesByType(resource)
 
