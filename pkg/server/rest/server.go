@@ -31,6 +31,7 @@ type Server interface {
 	ServeHttp(lis net.Listener)
 	ServeHttp2Tls(tls net.Listener)
 	Router() *mux.Router
+	GetHandler() http.Handler
 }
 
 type server struct {
@@ -49,6 +50,10 @@ type server struct {
 	logApi            LogApi
 	versionApi        VersionApi
 	r                 *mux.Router
+}
+
+func (s *server) GetHandler() http.Handler {
+	return s.handler
 }
 
 func (s *server) Router() *mux.Router {

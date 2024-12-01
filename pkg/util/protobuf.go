@@ -52,3 +52,7 @@ func ReadJson(fileName string, msg proto.Message) error {
 
 	return umo.Unmarshal(bytes, msg)
 }
+
+func ReadJsonContent(content string, msg proto.Message) error {
+	return umo.Unmarshal([]byte(content), msg)
+}
