@@ -36,6 +36,10 @@ type App struct {
 	init                     bool
 }
 
+func (app *App) GetModules() []service.Module {
+	return app.modules
+}
+
 func (app *App) GetAppConfig() *model.AppConfig {
 	return app.config
 }

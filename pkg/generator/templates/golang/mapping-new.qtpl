@@ -7,6 +7,12 @@
          {%s varName %}_mapped = string({%= NormalizePointer(property, varName, isCollectionItem, false) %})
     {%- elseif property.Type == model.ResourceProperty_UUID -%}
             {%s varName %}_mapped = {%s varName %}.String()
+    {%- elseif property.Type == model.ResourceProperty_TIMESTAMP -%}
+            {%s varName %}_mapped = {%s varName %}.Format(time.RFC3339)
+    {%- elseif property.Type == model.ResourceProperty_DATE -%}
+            {%s varName %}_mapped = {%s varName %}.Format("2006-01-02")
+    {%- elseif property.Type == model.ResourceProperty_TIME -%}
+            {%s varName %}_mapped = {%s varName %}.Format("15:04:05")
      {%- elseif property.Type == model.ResourceProperty_STRUCT -%}
             {%s varName %}_mapped = {%= GoName(getSubTypeNameByProperty(resource, property)) %}MapperInstance.ToUnstructured({%= NormalizePointer(property, varName , isCollectionItem, true) %})
     {%- elseif property.Type == model.ResourceProperty_MAP -%}
@@ -40,6 +46,10 @@ func (m *{%s typeName %}Mapper) ToUnstructured({%= GoVarName(typeName)%} *{%s ty
     {%- if GoName(resource.Name) == typeName -%}
     properties["type"] = "{%s resource.Namespace %}/{%s resource.Name %}"
     {%- endif -%}
+
+    if {%= GoVarName(typeName)%} == nil {
+        return properties
+    }
 
     {%- for _, property := range properties -%}
     {% code varName := "var_" + GoName(property.Name) %}

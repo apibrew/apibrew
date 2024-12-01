@@ -34,6 +34,10 @@ func (s *swaggerApi) ConfigureRouter(r *mux.Router) {
 			config.Group = req.URL.Query().Get("group")
 		}
 
+		if req.URL.Query().Get("simple") != "" {
+			config.Simple = true
+		}
+
 		if req.URL.Query().Get("namespace") != "" {
 			config.Namespaces = strings.Split(req.URL.Query().Get("namespace"), ",")
 		}

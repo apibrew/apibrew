@@ -9,12 +9,12 @@ export interface Permission {
     resource?: string
     recordSelector?: BooleanExpression
     operation: Operation
-    before?: string | Date
-    after?: string | Date
+    before?: string
+    after?: string
     user?: User
     role?: Role
     permit: Permit
-    localFlags?: object
+    localFlags?: any
 }
 
 export const PermissionEntityInfo = {
@@ -26,8 +26,8 @@ export const PermissionEntityInfo = {
 export interface AuditData {
     createdBy: string
     updatedBy: string
-    createdOn: string | Date
-    updatedOn: string | Date
+    createdOn: string
+    updatedOn: string
 }
 
 export interface BooleanExpression {
@@ -56,7 +56,7 @@ export interface RegexMatchExpression {
 
 export interface Expression {
     property: string
-    value: object
+    value: any
 }
 
 export enum Operation {

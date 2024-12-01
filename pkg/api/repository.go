@@ -101,6 +101,7 @@ func (r repository[T]) Delete(ctx context.Context, entity T) error {
 }
 
 func (r repository[T]) List(ctx context.Context, params ListParams) (EntityListResult[T], error) {
+	params.Type = r.getType()
 	result, err := r.api.List(ctx, params)
 
 	if err != nil {
@@ -121,6 +122,10 @@ func (r repository[T]) List(ctx context.Context, params ListParams) (EntityListR
 	}
 
 	return EntityListResult[T]{Total: result.Total, Content: records}, nil
+}
+
+func (r repository[T]) getType() string {
+	return r.mapper.ToUnstructured(r.entityDefault)["type"].(string)
 }
 
 func (r repository[T]) GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, error) {

@@ -6,6 +6,7 @@ var model = require('@apibrew/client/model');
 var client = require('@apibrew/client');
 var clientImpl = require('@apibrew/client/impl/client-impl');
 var reactRouterDom = require('react-router-dom');
+var ext = require('@apibrew/client/ext');
 
 var ClientContext = React__default.createContext(undefined);
 var ClientProvider = ClientContext.Provider;
@@ -103,13 +104,18 @@ function useTokenBody() {
 }
 
 function _extends() {
-  return _extends = Object.assign ? Object.assign.bind() : function (n) {
-    for (var e = 1; e < arguments.length; e++) {
-      var t = arguments[e];
-      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
+  _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
     }
-    return n;
-  }, _extends.apply(null, arguments);
+    return target;
+  };
+  return _extends.apply(this, arguments);
 }
 
 // A type of promise-like that resolves synchronously and supports only one observer
@@ -3795,6 +3801,30 @@ var cloudConnectionProvider = {
   }
 };
 
+Object.keys(model).forEach(function (k) {
+  if (k !== 'default') Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () {
+      return model[k];
+    }
+  });
+});
+Object.keys(client).forEach(function (k) {
+  if (k !== 'default') Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () {
+      return client[k];
+    }
+  });
+});
+Object.keys(ext).forEach(function (k) {
+  if (k !== 'default') Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () {
+      return ext[k];
+    }
+  });
+});
 exports.ClientConsumer = ClientConsumer;
 exports.ClientContext = ClientContext;
 exports.ClientProvider = ClientProvider;

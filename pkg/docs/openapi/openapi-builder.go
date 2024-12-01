@@ -18,6 +18,7 @@ type OpenApiBuilder struct {
 }
 
 type OpenApiDocPrepareConfig struct {
+	Simple     bool
 	Group      string
 	Namespaces []string
 	Resources  []string

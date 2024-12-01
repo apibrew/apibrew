@@ -95,6 +95,11 @@ var {%= GoName(resource.Name) %}Resource = &model.Resource{
 	Namespace: "{%s resource.Namespace %}",
     {%- if resource.Title != nil %}Title: util.Pointer("{%s *resource.Title %}"),
     {% endif -%}
+    {%- if resource.SourceConfig != nil %}SourceConfig: &model.ResourceSourceConfig{
+            Entity: "{%s resource.SourceConfig.Entity %}",
+            Catalog: "{%s resource.SourceConfig.Catalog %}",
+    },
+    {% endif -%}
     {%- if resource.Description != nil %}Description: util.Pointer("{%s *resource.Description %}"),
     {% endif -%}
 	{%- if len(resource.Types) > 0 -%}
