@@ -62,9 +62,9 @@ var configureCmd = &cobra.Command{
 				return errors.New("project name must be provided")
 			}
 
-			serverConfig.Host = projectName + ".apibrew.io"
-			serverConfig.Port = 9443
-			serverConfig.HttpPort = 8443
+			serverConfig.Host = projectName + "-grpc.apibrew.io"
+			serverConfig.Port = 443
+			serverConfig.HttpPort = 443
 
 			res, err := http.Get("https://" + serverConfig.Host + ":" + fmt.Sprint(serverConfig.HttpPort) + "/health")
 

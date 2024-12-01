@@ -212,6 +212,10 @@ export class ClientImpl implements Client {
         return this.refreshToken()
     }
 
+    getCurrentToken(): string {
+        return this.tokenStorage.get(ACCESS_TOKEN) || '';
+    }
+
     public async authenticateWithUsernameAndPassword(username: string, password: string): Promise<void> {
         const refreshTokenResp = await axios.post<AuthenticationResponse>(Urls.authenticate(this.url), {
             username: username,
