@@ -42,6 +42,8 @@ export interface Client {
 
     newClientAuthenticateWithUsernameAndPassword(username: string, password: string): Promise<Client>;
 
+    getCurrentToken(): string
+
     repo<T extends Entity>(entityInfo: EntityInfo): Repository<T>;
 
     repository<T extends Entity>(entityInfo: EntityInfo): Repository<T>;
