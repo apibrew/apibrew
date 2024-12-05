@@ -36,13 +36,13 @@ func (r repository[T]) Create(ctx context.Context, entity T) (T, error) {
 	result, err := r.api.Create(ctx, r.mapper.ToUnstructured(entity))
 
 	if err != nil {
-		return r.entityDefault, err
+		return r.emptyEntity(), err
 	}
 
 	record, err2 := unstructured.ToRecord(result)
 
 	if err2 != nil {
-		return r.entityDefault, errors.RecordValidationError.WithMessage(err2.Error())
+		return r.emptyEntity(), errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
 	return r.mapper.FromRecord(record), nil
@@ -52,13 +52,13 @@ func (r repository[T]) Update(ctx context.Context, entity T) (T, error) {
 	result, err := r.api.Update(ctx, r.mapper.ToUnstructured(entity))
 
 	if err != nil {
-		return r.entityDefault, err
+		return r.emptyEntity(), err
 	}
 
 	record, err2 := unstructured.ToRecord(result)
 
 	if err2 != nil {
-		return r.entityDefault, errors.RecordValidationError.WithMessage(err2.Error())
+		return r.emptyEntity(), errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
 	return r.mapper.FromRecord(record), nil
@@ -68,13 +68,13 @@ func (r repository[T]) Apply(ctx context.Context, entity T) (T, error) {
 	result, err := r.api.Apply(ctx, r.mapper.ToUnstructured(entity))
 
 	if err != nil {
-		return r.entityDefault, err
+		return r.emptyEntity(), err
 	}
 
 	record, err2 := unstructured.ToRecord(result)
 
 	if err2 != nil {
-		return r.entityDefault, errors.RecordValidationError.WithMessage(err2.Error())
+		return r.emptyEntity(), errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
 	return r.mapper.FromRecord(record), nil
@@ -84,13 +84,13 @@ func (r repository[T]) Load(ctx context.Context, entity T, params LoadParams) (T
 	result, err := r.api.Load(ctx, r.mapper.ToUnstructured(entity), params)
 
 	if err != nil {
-		return r.entityDefault, err
+		return r.emptyEntity(), err
 	}
 
 	record, err2 := unstructured.ToRecord(result)
 
 	if err2 != nil {
-		return r.entityDefault, errors.RecordValidationError.WithMessage(err2.Error())
+		return r.emptyEntity(), errors.RecordValidationError.WithMessage(err2.Error())
 	}
 
 	return r.mapper.FromRecord(record), nil
@@ -125,17 +125,20 @@ func (r repository[T]) List(ctx context.Context, params ListParams) (EntityListR
 }
 
 func (r repository[T]) getType() string {
-	return r.mapper.ToUnstructured(r.entityDefault)["type"].(string)
+	return r.mapper.ToUnstructured(r.emptyEntity())["type"].(string)
 }
 
 func (r repository[T]) GetResourceByType(ctx context.Context, typeName string) (*resource_model.Resource, error) {
 	return r.api.GetResourceByType(ctx, typeName)
 }
 
+func (r repository[T]) emptyEntity() T {
+	return r.mapper.FromRecord(&model.Record{})
+}
+
 type repository[T Entity] struct {
-	api           Interface
-	mapper        Mapper[T]
-	entityDefault T
+	api    Interface
+	mapper Mapper[T]
 }
 
 func NewRepository[T Entity](api Interface, mapper Mapper[T]) Repository[T] {
