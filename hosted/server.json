@@ -1,0 +1,77 @@
+{
+  "host": "0.0.0.0",
+  "port": 9009,
+  "disableAuthentication": false,
+  "systemDataSource": {
+    "properties": {
+      "backend": "POSTGRESQL",
+      "description": "",
+      "name": "system",
+      "options": {
+        "db_name": "apibrew",
+        "defaultSchema": "public",
+        "host": "db",
+        "password": "postgres",
+        "port": "5432",
+        "username": "postgres"
+      }
+    }
+  },
+  "initRecords": [
+    {
+      "namespace": "system",
+      "resource": "DataSource",
+      "override": true,
+      "record": {
+        "properties": {
+          "backend": "POSTGRESQL",
+          "description": "",
+          "name": "default",
+          "options": {
+            "db_name": "apibrew",
+            "defaultSchema": "public",
+            "host": "db",
+            "password": "postgres",
+            "port": "5432",
+            "username": "postgres"
+          },
+          "version": 0
+        }
+      }
+    },
+    {
+      "namespace": "system",
+      "resource": "User",
+      "override": true,
+      "record": {
+        "properties": {
+          "password": "admin",
+          "permissions": [
+            {
+              "operation": "FULL",
+              "permit": "ALLOW",
+              "version": 0
+            }
+          ],
+          "username": "admin",
+          "version": 0
+        }
+      }
+    },
+    {
+      "namespace": "system",
+      "resource": "Namespace",
+      "override": true,
+      "record": {
+        "properties": {
+          "name": "default",
+          "version": 0
+        }
+      }
+    }
+  ],
+  "loggingConfig": {
+    "level": "DEBUG",
+    "reportCaller": true
+  }
+}

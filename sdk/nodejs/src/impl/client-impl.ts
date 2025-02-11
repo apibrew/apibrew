@@ -119,7 +119,7 @@ export class ClientImpl implements Client {
     }
 
     static ensureResponseSuccess(resp: AxiosResponse) {
-        if (resp.status != 200) {
+        if (resp.status >= 400) {
             const error = resp.data;
             if (error) {
                 throw ApiException.fromError(resp.data);

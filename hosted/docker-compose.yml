@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  apibrew:
+    image: tislib/apibrew:latest
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./server.json:/app/config.json
+    depends_on:
+      - db
+    networks:
+      - apibrew
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: apibrew
+    networks:
+      - apibrew
+  ui:
+    image: tislib/apibrew-studio:hosted-latest
+    ports:
+      - "9080:80"
+    volumes:
+      - ./ui.json:/usr/share/nginx/html/config.json
+    depends_on:
+      - apibrew
+    networks:
+      - apibrew
+networks:
+  apibrew:
+    driver: bridge
