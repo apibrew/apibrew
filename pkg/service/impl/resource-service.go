@@ -483,7 +483,7 @@ func (r *resourceService) Create(ctx context.Context, resource *model.Resource, 
 		}
 	}
 
-	r.schema.Resources = append(r.schema.Resources, insertedResource)
+	r.GetSchema().Resources = append(r.schema.Resources, insertedResource)
 	r.registerResourceToSchema(insertedResource)
 
 	return resource, nil
@@ -494,7 +494,7 @@ func (r *resourceService) GetResourceByName(ctx context.Context, namespace strin
 		namespace = "default"
 	}
 
-	for _, item := range r.schema.Resources {
+	for _, item := range r.GetSchema().Resources {
 		if item.Namespace == namespace && item.Name == resourceName {
 
 			if err := r.authorizationService.CheckRecordAccess(ctx, service.CheckRecordAccessParams{
