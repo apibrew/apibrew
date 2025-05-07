@@ -1,0 +1,62 @@
+type: resource
+name: Job
+namespace:
+  name: nano
+title: Job
+description: Job
+properties:
+  name:
+    title: Name
+    description: Full Qualified Name of the code, it must be unique in the system
+    type: STRING
+    length: 255
+    immutable: true
+    required: true
+    unique: true
+  nextExecutionTime:
+    title: Next Execution Time
+    type: timestamp
+    required: true
+  language:
+    title: Language
+    description: Code language
+    type: ENUM
+    required: true
+    enumValues:
+      - JAVASCRIPT
+      - TYPESCRIPT
+    defaultValue: JAVASCRIPT
+  source:
+    title: Content
+    description: Code content
+    type: STRING
+    length: 64000
+    required: true
+    annotations:
+      SQLType: "TEXT"
+  contentFormat:
+    title: Content Format
+    description: Code content format
+    type: ENUM
+    required: true
+    enumValues:
+      - TEXT
+      - TAR
+      - TAR_GZ
+    defaultValue: TEXT
+  annotations:
+    type: MAP
+    required: false
+    item:
+      type: STRING
+  lastExecutionTime:
+    title: Last Execution Time
+    description: Last execution time
+    type: timestamp
+  lastExecutionError:
+    title: Last Execution Error
+    description: Last execution error
+    type: string
+annotations:
+  EnableAudit: "true"
+  OpenApiGroup: "meta"

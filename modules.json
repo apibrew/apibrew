@@ -1,4 +1,4 @@
 {
-  "github.com/apibrew/nano/pkg": "v1.0.39",
-  "github.com/apibrew/metrics/pkg": "v1.0.17"
+  "github.com/apibrew/apibrew/modules/nano/pkg": "",
+  "github.com/apibrew/apibrew/modules/metrics/pkg": ""
 }

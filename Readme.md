@@ -14,7 +14,7 @@
 
 Docs: https://apibrew.io/docs/getting-started
 
-Nano Code Repository: https://github.com/apibrew/nano
+Nano Code Repository: https://github.com/apibrew/apibrew/modules/nano
 
 Getting Started Video: https://www.youtube.com/watch?v=6iJ5qCUbdgs
 

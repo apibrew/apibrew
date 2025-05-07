@@ -1,0 +1,15 @@
+type: resource
+name: Person
+properties:
+  firstName:
+    type: STRING
+    required: true
+  lastName:
+    type: STRING
+    required: true
+---
+type: nano/Code
+name: person.js
+language: JAVASCRIPT
+content:
+  $file: 'data/person.js'

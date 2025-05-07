@@ -1,0 +1,11 @@
+type: resource
+name: TestResource
+namespace:
+  name: template
+virtual: true
+properties:
+  name:
+    type: string
+  description:
+    type: string
+annotations:

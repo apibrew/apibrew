@@ -1,0 +1,15 @@
+type: resource
+name: PersonTypescript
+properties:
+  firstName:
+    type: STRING
+    required: true
+  lastName:
+    type: STRING
+    required: true
+---
+type: nano/Code
+name: person-typescript.ts
+language: TYPESCRIPT
+content:
+  $file: 'data/person-typescript.ts'

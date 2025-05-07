@@ -1,0 +1,19 @@
+type: resource
+name: File
+namespace:
+  name: storage
+properties:
+  name:
+    type: string
+    required: true
+    description: The name of the media item
+  uploadUrl:
+    type: string
+    required: true
+    description: The URL to upload the media item
+    length: 1024
+  downloadUrl:
+    type: string
+    required: true
+    description: The URL to download the media item
+    length: 1024
