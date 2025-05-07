@@ -1,12 +1,10 @@
-package nano
+package common
 
 import (
 	"context"
 	"github.com/apibrew/apibrew/pkg/model"
 	"github.com/apibrew/apibrew/pkg/service"
 	backend_event_handler "github.com/apibrew/apibrew/pkg/service/backend-event-handler"
-	"github.com/apibrew/apibrew/pkg/util"
-	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -87,26 +85,6 @@ func RegisterResourceProcessor[T any](handlerName string,
 		Sync:     true,
 		Internal: true,
 	})
-
-	var codeRecords, _, err = container.GetRecordService().List(util.SystemContext, service.RecordListParams{
-		Namespace: resource.Namespace,
-		Resource:  resource.Name,
-		Limit:     1000000,
-	})
-
-	if err != nil {
-		return err
-	}
-
-	for _, record := range codeRecords {
-		entity := processor.MapperTo(record)
-
-		err := processor.Register(util.SystemContext, entity)
-
-		if err != nil {
-			logrus.Error(err)
-		}
-	}
 
 	return nil
 }

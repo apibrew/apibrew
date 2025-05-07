@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"fmt"
+	pkg "github.com/apibrew/apibrew/modules/tenant"
 	"github.com/apibrew/apibrew/pkg/abs"
 	"github.com/apibrew/apibrew/pkg/backend/helper"
 	"github.com/apibrew/apibrew/pkg/errors"
@@ -14,6 +15,21 @@ import (
 )
 
 func (p *sqlBackend) resourceMigrateTable(ctx context.Context, runner helper.QueryRunner, params abs.UpgradeResourceParams) error {
+	if pkg.GetTenant(ctx) != "" {
+		if params.MigrationPlan.CurrentResource != nil {
+			if params.MigrationPlan.CurrentResource.SourceConfig == nil {
+				params.MigrationPlan.CurrentResource.SourceConfig = &model.ResourceSourceConfig{}
+			}
+			params.MigrationPlan.CurrentResource.SourceConfig.Catalog = pkg.GetTenant(ctx)
+		}
+		if params.MigrationPlan.ExistingResource != nil {
+			if params.MigrationPlan.ExistingResource.SourceConfig == nil {
+				params.MigrationPlan.ExistingResource.SourceConfig = &model.ResourceSourceConfig{}
+			}
+			params.MigrationPlan.ExistingResource.SourceConfig.Catalog = pkg.GetTenant(ctx)
+		}
+	}
+
 	hp := p.options.GetResourceMigrationBuilderConstructor()(ctx, runner, p.schema, params, params.ForceMigration)
 
 	return helper.ResourceMigrateTableViaResourceMigrationBuilder(hp, params.MigrationPlan, params.ForceMigration)

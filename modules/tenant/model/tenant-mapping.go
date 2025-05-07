@@ -16,40 +16,40 @@ import (
 
 import "github.com/google/uuid"
 
-type TestResourceMapper struct {
+type TenantMapper struct {
 }
 
-func NewTestResourceMapper() *TestResourceMapper {
-	return &TestResourceMapper{}
+func NewTenantMapper() *TenantMapper {
+	return &TenantMapper{}
 }
 
-var TestResourceMapperInstance = NewTestResourceMapper()
+var TenantMapperInstance = NewTenantMapper()
 
-func (m *TestResourceMapper) New() *TestResource {
-	return &TestResource{}
+func (m *TenantMapper) New() *Tenant {
+	return &Tenant{}
 }
 
-func (m *TestResourceMapper) ResourceIdentity() abs.ResourceIdentity {
+func (m *TenantMapper) ResourceIdentity() abs.ResourceIdentity {
 	return abs.ResourceIdentity{
-		Namespace: "template",
-		Name:      "TestResource",
+		Namespace: "default",
+		Name:      "Tenant",
 	}
 }
 
-func (m *TestResourceMapper) ToRecord(testResource *TestResource) *model.Record {
+func (m *TenantMapper) ToRecord(tenant *Tenant) *model.Record {
 	var rec = &model.Record{}
-	rec.Properties = m.ToProperties(testResource)
+	rec.Properties = m.ToProperties(tenant)
 	return rec
 }
 
-func (m *TestResourceMapper) FromRecord(record *model.Record) *TestResource {
+func (m *TenantMapper) FromRecord(record *model.Record) *Tenant {
 	return m.FromProperties(record.Properties)
 }
 
-func (m *TestResourceMapper) ToProperties(testResource *TestResource) map[string]*structpb.Value {
+func (m *TenantMapper) ToProperties(tenant *Tenant) map[string]*structpb.Value {
 	var properties = make(map[string]*structpb.Value)
 
-	var_Id := testResource.Id
+	var_Id := tenant.Id
 
 	if var_Id != nil {
 		var var_Id_mapped *structpb.Value
@@ -62,7 +62,7 @@ func (m *TestResourceMapper) ToProperties(testResource *TestResource) map[string
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Name := testResource.Name
+	var_Name := tenant.Name
 
 	if var_Name != nil {
 		var var_Name_mapped *structpb.Value
@@ -75,7 +75,7 @@ func (m *TestResourceMapper) ToProperties(testResource *TestResource) map[string
 		properties["name"] = var_Name_mapped
 	}
 
-	var_Description := testResource.Description
+	var_Description := tenant.Description
 
 	if var_Description != nil {
 		var var_Description_mapped *structpb.Value
@@ -88,7 +88,7 @@ func (m *TestResourceMapper) ToProperties(testResource *TestResource) map[string
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Version := testResource.Version
+	var_Version := tenant.Version
 
 	var var_Version_mapped *structpb.Value
 
@@ -101,7 +101,7 @@ func (m *TestResourceMapper) ToProperties(testResource *TestResource) map[string
 	return properties
 }
 
-func (m *TestResourceMapper) FromProperties(properties map[string]*structpb.Value) *TestResource {
+func (m *TenantMapper) FromProperties(properties map[string]*structpb.Value) *Tenant {
 	var s = m.New()
 	if properties["id"] != nil && properties["id"].AsInterface() != nil {
 
@@ -161,11 +161,15 @@ func (m *TestResourceMapper) FromProperties(properties map[string]*structpb.Valu
 	return s
 }
 
-func (m *TestResourceMapper) ToUnstructured(testResource *TestResource) unstructured.Unstructured {
+func (m *TenantMapper) ToUnstructured(tenant *Tenant) unstructured.Unstructured {
 	var properties unstructured.Unstructured = make(unstructured.Unstructured)
-	properties["type"] = "template/TestResource"
+	properties["type"] = "default/Tenant"
 
-	var_Id := testResource.Id
+	if tenant == nil {
+		return properties
+	}
+
+	var_Id := tenant.Id
 
 	if var_Id != nil {
 		var var_Id_mapped interface{}
@@ -174,7 +178,7 @@ func (m *TestResourceMapper) ToUnstructured(testResource *TestResource) unstruct
 		properties["id"] = var_Id_mapped
 	}
 
-	var_Name := testResource.Name
+	var_Name := tenant.Name
 
 	if var_Name != nil {
 		var var_Name_mapped interface{}
@@ -183,7 +187,7 @@ func (m *TestResourceMapper) ToUnstructured(testResource *TestResource) unstruct
 		properties["name"] = var_Name_mapped
 	}
 
-	var_Description := testResource.Description
+	var_Description := tenant.Description
 
 	if var_Description != nil {
 		var var_Description_mapped interface{}
@@ -192,7 +196,7 @@ func (m *TestResourceMapper) ToUnstructured(testResource *TestResource) unstruct
 		properties["description"] = var_Description_mapped
 	}
 
-	var_Version := testResource.Version
+	var_Version := tenant.Version
 
 	var var_Version_mapped interface{}
 

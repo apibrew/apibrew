@@ -11,9 +11,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-var TestResourceResource = &model.Resource{
-	Name:      "TestResource",
-	Namespace: "template",
+var TenantResource = &model.Resource{
+	Name:      "Tenant",
+	Namespace: "default",
+	SourceConfig: &model.ResourceSourceConfig{
+		Entity:  "",
+		Catalog: "",
+	},
 	Properties: []*model.ResourceProperty{
 		{
 			Name:         "id",
@@ -25,15 +29,25 @@ var TestResourceResource = &model.Resource{
 
 			Annotations: map[string]string{
 				"SpecialProperty": "true",
+				"SourceMatchKey":  "956d60d041e8",
 			},
 		},
 		{
-			Name: "name",
-			Type: model.ResourceProperty_STRING,
+			Name:   "name",
+			Type:   model.ResourceProperty_STRING,
+			Unique: true,
+
+			Annotations: map[string]string{
+				"SourceMatchKey": "3a7df34ec4ad",
+			},
 		},
 		{
 			Name: "description",
 			Type: model.ResourceProperty_STRING,
+
+			Annotations: map[string]string{
+				"SourceMatchKey": "5d7056cfa1f9",
+			},
 		},
 		{
 			Name:         "version",
@@ -45,8 +59,8 @@ var TestResourceResource = &model.Resource{
 			Annotations: map[string]string{
 				"SpecialProperty":     "true",
 				"AllowEmptyPrimitive": "true",
+				"SourceMatchKey":      "3d588ae02a59",
 			},
 		},
 	},
-	Virtual: true,
 }

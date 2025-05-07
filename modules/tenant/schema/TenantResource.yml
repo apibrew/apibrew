@@ -1,0 +1,11 @@
+type: resource
+name: Tenant
+namespace:
+  name: default
+properties:
+  name:
+    type: string
+    unique: true
+  description:
+    type: string
+annotations:

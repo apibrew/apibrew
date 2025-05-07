@@ -8,7 +8,7 @@ COPY go.sum go.sum
 RUN go mod download
 
 COPY cmd cmd
-COPY module module
+COPY modules modules
 COPY pkg pkg
 
 FROM buildenv as lint

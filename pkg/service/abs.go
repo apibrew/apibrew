@@ -64,6 +64,7 @@ type RecordService interface {
 
 type ResourceService interface {
 	Init(config *model.AppConfig)
+	MigrateResource(ctx context.Context, resource *model.Resource)
 	GetResourceByName(ctx context.Context, namespace, resource string) (*model.Resource, error)
 	GetSystemResourceByName(ctx context.Context, resourceName string) (*model.Resource, error)
 	Create(ctx context.Context, resource *model.Resource, doMigration bool, forceMigration bool) (*model.Resource, error)

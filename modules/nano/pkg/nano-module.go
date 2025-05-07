@@ -4,6 +4,7 @@ import (
 	"context"
 	errors2 "errors"
 	"fmt"
+	"github.com/apibrew/apibrew/modules/common"
 	model2 "github.com/apibrew/apibrew/modules/nano/pkg/model"
 	"github.com/apibrew/apibrew/pkg/api"
 	"github.com/apibrew/apibrew/pkg/errors"
@@ -36,7 +37,7 @@ func (m module) Init() {
 	m.ensureResources()
 	m.initScriptListeners()
 
-	if err := RegisterResourceProcessor[*model2.Module](
+	if err := common.RegisterResourceProcessor[*model2.Module](
 		"nano-module-listener",
 		&moduleProcessor{
 			codeExecutor: m.codeExecutor,
@@ -48,7 +49,7 @@ func (m module) Init() {
 		log.Fatal(err)
 	}
 
-	if err := RegisterResourceProcessor[*model2.Code](
+	if err := common.RegisterResourceProcessor[*model2.Code](
 		"nano-code-listener",
 		&codeProcessor{
 			codeExecutor: m.codeExecutor,
@@ -60,7 +61,7 @@ func (m module) Init() {
 		log.Fatal(err)
 	}
 
-	if err := RegisterResourceProcessor[*model2.CronJob](
+	if err := common.RegisterResourceProcessor[*model2.CronJob](
 		"nano-cron-job-listener",
 		&cronJobProcessor{
 			codeExecutor: m.codeExecutor,
@@ -73,7 +74,7 @@ func (m module) Init() {
 		log.Fatal(err)
 	}
 
-	if err := RegisterResourceProcessor[*model2.Action](
+	if err := common.RegisterResourceProcessor[*model2.Action](
 		"nano-action-listener",
 		&actionProcessor{
 			backendEventHandler: m.backendEventHandler,
@@ -87,7 +88,7 @@ func (m module) Init() {
 		log.Fatal(err)
 	}
 
-	if err := RegisterResourceProcessor[*model2.Job](
+	if err := common.RegisterResourceProcessor[*model2.Job](
 		"nano-job-listener",
 		&jobProcessor{
 			codeExecutor: m.codeExecutor,

@@ -8,22 +8,22 @@ package model
 
 import "github.com/google/uuid"
 
-type TestResource struct {
+type Tenant struct {
 	Id          *uuid.UUID `json:"id,omitempty"`
 	Name        *string    `json:"name,omitempty"`
 	Description *string    `json:"description,omitempty"`
 	Version     int32      `json:"version,omitempty"`
 }
 
-func (s TestResource) GetId() *uuid.UUID {
+func (s Tenant) GetId() *uuid.UUID {
 	return s.Id
 }
-func (s TestResource) GetName() *string {
+func (s Tenant) GetName() *string {
 	return s.Name
 }
-func (s TestResource) GetDescription() *string {
+func (s Tenant) GetDescription() *string {
 	return s.Description
 }
-func (s TestResource) GetVersion() int32 {
+func (s Tenant) GetVersion() int32 {
 	return s.Version
 }

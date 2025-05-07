@@ -524,16 +524,16 @@ func (r *resourceService) Init(config *model.AppConfig) {
 	r.schema.Resources = append(r.schema.Resources, resources.GetAllSystemResources()...)
 
 	r.prepareSchemaMappings()
+	var ctx = util.WithSystemContext(context.TODO())
+	r.MigrateResource(ctx, resources.NamespaceResource)
+	r.MigrateResource(ctx, resources.DataSourceResource)
 
-	r.migrateResource(resources.NamespaceResource)
-	r.migrateResource(resources.DataSourceResource)
-
-	r.migrateResource(resources.ResourceResource)
-	r.migrateResource(resources.UserResource)
-	r.migrateResource(resources.RoleResource)
-	r.migrateResource(resources.PermissionResource)
-	r.migrateResource(resources.ExtensionResource)
-	r.migrateResource(resources.AuditLogResource)
+	r.MigrateResource(ctx, resources.ResourceResource)
+	r.MigrateResource(ctx, resources.UserResource)
+	r.MigrateResource(ctx, resources.RoleResource)
+	r.MigrateResource(ctx, resources.PermissionResource)
+	r.MigrateResource(ctx, resources.ExtensionResource)
+	r.MigrateResource(ctx, resources.AuditLogResource)
 
 	if err := r.reloadSchema(util.WithSystemContext(context.TODO())); err != nil {
 		panic(err)
@@ -576,7 +576,7 @@ func (r *resourceService) registerResourceToSchema(resource *model.Resource) {
 	log.Debugf("Registered resource to schema: %s/%s", resource.Namespace, resource.Name)
 }
 
-func (r *resourceService) migrateResource(resource *model.Resource) {
+func (r *resourceService) MigrateResource(ctx context.Context, resource *model.Resource) {
 	if resource.Annotations == nil {
 		resource.Annotations = make(map[string]string)
 	}
@@ -585,13 +585,13 @@ func (r *resourceService) migrateResource(resource *model.Resource) {
 		resource.AuditData = &model.AuditData{}
 	}
 
-	preparedResource, err := r.backendProviderService.PrepareResourceFromEntity(context.TODO(), "system", resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
+	preparedResource, err := r.backendProviderService.PrepareResourceFromEntity(ctx, "system", resource.SourceConfig.Catalog, resource.SourceConfig.Entity)
 
 	if err != nil && !errors.RecordNotFoundError.Is(err) {
 		log.Fatal(err)
 	}
 
-	migrationPlan, err := r.resourceMigrationService.PreparePlan(context.TODO(), preparedResource, resource)
+	migrationPlan, err := r.resourceMigrationService.PreparePlan(ctx, preparedResource, resource)
 	if err != nil {
 		panic(err)
 	}
@@ -605,7 +605,7 @@ func (r *resourceService) migrateResource(resource *model.Resource) {
 		log.Tracef("Migration plan for %s/%s \n %s", resource.Namespace, resource.Name, jsonRes)
 	}
 
-	err = r.backendProviderService.UpgradeResource(context.TODO(), "system", abs.UpgradeResourceParams{
+	err = r.backendProviderService.UpgradeResource(ctx, "system", abs.UpgradeResourceParams{
 		MigrationPlan:  migrationPlan,
 		ForceMigration: true,
 	})

@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"github.com/apibrew/apibrew/module"
+	"github.com/apibrew/apibrew/modules"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -26,8 +26,8 @@ type VersionResponse struct {
 
 func (m versionApi) handleVersion(writer http.ResponseWriter, request *http.Request) {
 	resp := VersionResponse{
-		Version: module.Version,
-		Modules: module.Modules,
+		Version: modules.Version,
+		Modules: modules.Modules,
 	}
 
 	respondSuccess(writer, resp)

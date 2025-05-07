@@ -4,7 +4,7 @@
 
 //go:build !codeanalysis
 
-package modul
+package module
 
 
 	module2 "github.com/apibrew/apibrew/modules/metrics/pkg"

@@ -51,7 +51,7 @@ func (r *resourceMigrationBuilder) prepareIndexDef(index *model.ResourceIndex, p
 
 	indexName := r.prepareIndexName(index, resource)
 
-	sql := fmt.Sprintf("CREATE %s INDEX %s ON %s(%s)", uniqueStr, r.options.Quote(indexName), r.options.GetFullTableName(resource.SourceConfig), strings.Join(colsEscaped, ","))
+	sql := fmt.Sprintf("CREATE %s INDEX IF NOT EXISTS %s ON %s(%s)", uniqueStr, r.options.Quote(indexName), r.options.GetFullTableName(resource.SourceConfig), strings.Join(colsEscaped, ","))
 	return sql, nil
 }
 
@@ -372,7 +372,7 @@ func (r *resourceMigrationBuilder) DeleteIndex(index *model.ResourceIndex) helpe
 	r.execs = append(r.execs, func() error {
 		var indexName = r.prepareIndexName(index, r.params.MigrationPlan.CurrentResource)
 
-		sql := fmt.Sprintf("DROP INDEX %s(\"%s\")", r.tableName, indexName)
+		sql := fmt.Sprintf("DROP INDEX IF EXISTS \"%s\"", indexName)
 
 		_, sqlError := r.runner.ExecContext(r.ctx, sql)
 		return r.options.handleDbError(r.ctx, sqlError)
